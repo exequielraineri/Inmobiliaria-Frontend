@@ -1,9 +1,20 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useContext, useEffect, useState } from "react";
 import "./layoutPrincipal.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RoutesComponent } from "../Routes/RoutesComponent";
+import { UsuarioContexto } from "../Context/UsuarioContext";
+import { Alerta } from "../components/Alerta/Alerta";
+import { Toaster } from "sonner";
 export const LayoutPrincipal = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const { usuario } = useContext(UsuarioContexto);
+  const [alerta, setAlerta] = useState({ mensaje: "", tipo: "" });
+
+  const mostrarAlerta = (mensaje, tipo = "info") => {
+    setAlerta({ mensaje, tipo });
+  };
 
   return (
     <div className="wrapper">
@@ -29,28 +40,31 @@ export const LayoutPrincipal = () => {
               location.pathname === "/" ? "bg-primary" : ""
             }`}
           >
-            <Link to={"/"} className="sidebar-link">
+            <Link to={"/"} title="Inicio" className="sidebar-link">
               <i className="fa-solid fa-home"></i>
               <span>Inicio</span>
             </Link>
           </li>
           <li
             className={`sidebar-item ${
-              location.pathname === "/inmuebles" ? "bg-primary" : ""
+              location.pathname.endsWith("inmuebles") ? "bg-primary" : ""
             }`}
           >
-            <a
-              className="sidebar-link has-dropdown"
-              data-bs-toggle="collapse"
-              href="#menuInmueble"
-              role="button"
-              aria-expanded="false"
-              aria-controls="menuInmueble"
+            <Link
+              title="Inmuebles"
+              to={"/inmuebles"}
+              className="sidebar-link"
+              // " has-dropdown"
+              // data-bs-toggle="collapse"
+              // href="#menuInmueble"
+              // role="button"
+              // aria-expanded="false"
+              // aria-controls="menuInmueble"
             >
               <i className="fa-solid fa-tag"></i>
               <span>Inmuebles</span>
-            </a>
-            <div className="collapse sidebar-dropdown" id="menuInmueble">
+            </Link>
+            {/* <div className="collapse sidebar-dropdown" id="menuInmueble">
               <ul className="nav flex-column ms-4">
                 <li className="">
                   <Link to={"/inmuebles"} className="sidebar-link" href="#">
@@ -63,24 +77,26 @@ export const LayoutPrincipal = () => {
                   </Link>
                 </li>
               </ul>
-            </div>
+            </div> */}
           </li>
           <li
             className={`sidebar-item ${
-              location.pathname === "/inmuebles" ? "bg-primary" : ""
+              location.pathname.includes("clientes") ? "bg-primary" : ""
             }`}
           >
-            <a
+            <Link
+              title="Clientes"
+              to={"/clientes"}
               className="sidebar-link has-dropdown"
-              data-bs-toggle="collapse"
-              href="#menuClientes"
-              role="button"
-              aria-expanded="false"
-              aria-controls="menuClientes"
+              // data-bs-toggle="collapse"
+              // href="#menuClientes"
+              // role="button"
+              // aria-expanded="false"
+              // aria-controls="menuClientes"
             >
               <i className="fa-solid fa-users"></i>
               <span>Clientes</span>
-            </a>
+            </Link>
             <div className="collapse sidebar-dropdown" id="menuClientes">
               <ul className="nav flex-column ms-4">
                 <li className="">
@@ -115,20 +131,20 @@ export const LayoutPrincipal = () => {
           </li>
           <li
             className={`sidebar-item ${
-              location.pathname === "/ventas" ? "bg-primary" : ""
+              location.pathname.endsWith("ventas") ? "bg-primary" : ""
             }`}
           >
-            <Link to={"/ventas"} className="sidebar-link">
+            <Link to={"/ventas"} title="Ventas" className="sidebar-link">
               <i className="fa-solid fa-credit-card"></i>
               <span>Ventas</span>
             </Link>
           </li>
           <li
             className={`sidebar-item ${
-              location.pathname === "/alquiler" ? "bg-primary" : ""
+              location.pathname.endsWith("alquiler") ? "bg-primary" : ""
             }`}
           >
-            <Link to={"/alquiler"} className="sidebar-link ">
+            <Link to={"/alquiler"} title="Alquiler" className="sidebar-link ">
               <i className="fa-solid fa-box"></i>
               <span>Alquiler</span>
             </Link>
@@ -136,10 +152,10 @@ export const LayoutPrincipal = () => {
 
           <li
             className={`sidebar-item ${
-              location.pathname === "/consultas" ? "bg-primary" : ""
+              location.pathname.endsWith("consultas") ? "bg-primary" : ""
             }`}
           >
-            <Link to={"/consultas"} className="sidebar-link">
+            <Link title="Consultas" to={"/consultas"} className="sidebar-link">
               <i className="fa-solid fa-archive"></i>
               <span>Consultas</span>
             </Link>
@@ -149,38 +165,33 @@ export const LayoutPrincipal = () => {
 
           <li
             className={`sidebar-item ${
-              location.pathname === "/agentes" ? "bg-primary" : ""
+              location.pathname.endsWith("agentes") ? "bg-primary" : ""
             }`}
           >
-            <Link to={"/agentes"} className="sidebar-link">
+            <Link title="Agentes" to={"/agentes"} className="sidebar-link">
               <i className="fa-solid fa-users"></i>
               <span>Agentes</span>
             </Link>
           </li>
           <li
             className={`sidebar-item ${
-              location.pathname === "/contratos" ? "bg-primary" : ""
+              location.pathname.endsWith("contratos") ? "bg-primary" : ""
             }`}
           >
-            <Link to={"/contratos"} className="sidebar-link">
+            <Link title="Contratos" to={"/contratos"} className="sidebar-link">
               <i className="fa-solid fa-shop"></i>
               <span>Contratos</span>
             </Link>
           </li>
-
-          <li
-            className={`sidebar-item ${
-              location.pathname === "/usuarios" ? "bg-primary" : ""
-            }`}
-          >
-            <Link to={"/usuarios"} className="sidebar-link">
-              <i className="fa-solid fa-user"></i>
-              <span>Usuarios</span>
-            </Link>
-          </li>
         </ul>
         <div className="sidebar-footer">
-          <a href="/" className="sidebar-link link-danger">
+          <a
+            href="/"
+            onClick={() => {
+              sessionStorage.removeItem("usuario");
+            }}
+            className="sidebar-link link-danger"
+          >
             <i className="fa-solid fa-right-from-bracket"></i>
             <span>Cerrar Sesión</span>
           </a>
@@ -189,25 +200,19 @@ export const LayoutPrincipal = () => {
       <div className="main bg-ligth">
         <nav className=" border-bottom navbar navbar-expand px-4 py-3">
           <div className=" w-100 d-flex justify-content-between align-items-center">
-            <h3>
-              <span className="fw-light"> Bienvenido</span>
+            <h3 className="fw-light">
+              Bienvenido <span className="fw-bold"> {usuario?.nombre}</span>
             </h3>
 
-            <Link to={"/perfil"}>
-              <img
-                src="logo.png"
-                alt="Perfil"
-                className="rounded-circle"
-                width={40}
-                style={{
-                  objectFit: "cover",
-                }}
-              />
+            <Link title="Perfil" to={"/perfil"}>
+              <span>{usuario?.rol}</span>
+              <i className="ps-2 fa-solid fa-user"></i>
             </Link>
           </div>
         </nav>
-        <main className="content px-3 py-4">
+        <main className="container-fluid p-3">
           <RoutesComponent />
+          <Toaster position="bottom-right" />
         </main>
       </div>
     </div>
