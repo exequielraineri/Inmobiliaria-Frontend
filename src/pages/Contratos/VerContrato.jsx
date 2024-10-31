@@ -5,7 +5,8 @@ import { useParams } from "react-router-dom";
 import { getData, putData } from "../../service/apiService";
 import { Imagen } from "../../components/Imagen/Imagen";
 import { formatearPrecio } from "../../data/funciones";
-export const VerAlquiler = () => {
+import { toast } from "sonner";
+export const VerContrato = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [contrato, setContrato] = useState();
@@ -13,7 +14,7 @@ export const VerAlquiler = () => {
   const obtenerContrato = async () => {
     setLoading(true);
     try {
-      const response = await getData("/alquiler/" + id);
+      const response = await getData("/contratos/" + id);
       setContrato(response?.data);
     } catch (error) {
       console.log(error);
@@ -33,12 +34,21 @@ export const VerAlquiler = () => {
     };
     setLoading(true);
     try {
-      await putData("pagos/confirmar/" + pagoData?.id, pagoData);
+      toast.promise(putData("pagos/confirmar/" + pagoData?.id, pagoData), {
+        loading: "Cargando...",
+        success: (response) => {
+          obtenerContrato();
+          return "Pago actualizado";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error al confirmar pago";
+        },
+      });
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
-      obtenerContrato();
     }
   };
 
@@ -91,19 +101,18 @@ export const VerAlquiler = () => {
         <table className="table table-sm table-striped">
           <thead className="table-dark">
             <tr>
-              <th className="col-1">#</th>
+              <th className="col-auto">#</th>
               <th className="col">Fecha de Pago</th>
               <th className="col">Fecha de Registro</th>
               <th className="col">Monto</th>
               <th className="col">Estado</th>
               <th className="col"></th>
-              <th className="col-1"></th>
+              <th className="col-auto"></th>
             </tr>
           </thead>
           <tbody>
             {contrato?.pagos?.map((pago, index) => {
               let pagoAnterior = contrato?.pagos[index - 1];
-              console.log(pagoAnterior == null);
 
               return (
                 <tr

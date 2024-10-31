@@ -1,20 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import "./layoutPrincipal.css";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { RoutesComponent } from "../Routes/RoutesComponent";
 import { UsuarioContexto } from "../Context/UsuarioContext";
-import { Alerta } from "../components/Alerta/Alerta";
-import { Toaster } from "sonner";
 export const LayoutPrincipal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { usuario } = useContext(UsuarioContexto);
   const [alerta, setAlerta] = useState({ mensaje: "", tipo: "" });
-
-  const mostrarAlerta = (mensaje, tipo = "info") => {
-    setAlerta({ mensaje, tipo });
-  };
 
   return (
     <div className="wrapper">
@@ -97,7 +91,7 @@ export const LayoutPrincipal = () => {
               <i className="fa-solid fa-users"></i>
               <span>Clientes</span>
             </Link>
-            <div className="collapse sidebar-dropdown" id="menuClientes">
+            {/* <div className="collapse sidebar-dropdown" id="menuClientes">
               <ul className="nav flex-column ms-4">
                 <li className="">
                   <Link
@@ -127,27 +121,7 @@ export const LayoutPrincipal = () => {
                   </Link>
                 </li>
               </ul>
-            </div>
-          </li>
-          <li
-            className={`sidebar-item ${
-              location.pathname.endsWith("ventas") ? "bg-primary" : ""
-            }`}
-          >
-            <Link to={"/ventas"} title="Ventas" className="sidebar-link">
-              <i className="fa-solid fa-credit-card"></i>
-              <span>Ventas</span>
-            </Link>
-          </li>
-          <li
-            className={`sidebar-item ${
-              location.pathname.endsWith("alquiler") ? "bg-primary" : ""
-            }`}
-          >
-            <Link to={"/alquiler"} title="Alquiler" className="sidebar-link ">
-              <i className="fa-solid fa-box"></i>
-              <span>Alquiler</span>
-            </Link>
+            </div> */}
           </li>
 
           <li
@@ -163,6 +137,20 @@ export const LayoutPrincipal = () => {
 
           <hr className="text-white" />
 
+          <li
+            className={`sidebar-item ${
+              location.pathname.endsWith("transacciones") ? "bg-primary" : ""
+            }`}
+          >
+            <Link
+              title="Transacciones"
+              to={"/transacciones"}
+              className="sidebar-link"
+            >
+              <i className="fa-solid fa-history"></i>
+              <span>Transacciones</span>
+            </Link>
+          </li>
           <li
             className={`sidebar-item ${
               location.pathname.endsWith("agentes") ? "bg-primary" : ""
@@ -212,7 +200,6 @@ export const LayoutPrincipal = () => {
         </nav>
         <main className="container-fluid p-3">
           <RoutesComponent />
-          <Toaster position="bottom-right" />
         </main>
       </div>
     </div>

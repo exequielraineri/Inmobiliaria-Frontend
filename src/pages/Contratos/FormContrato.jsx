@@ -5,7 +5,8 @@ import { getData, postData } from "../../service/apiService";
 import { formatearPrecio } from "../../data/funciones";
 import { useNavigate } from "react-router-dom";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
-export const FormAlquiler = () => {
+import { toast } from "sonner";
+export const FormContrato = () => {
   const { usuario } = useContext(UsuarioContexto);
 
   const [contrato, setContrato] = useState({
@@ -25,57 +26,49 @@ export const FormAlquiler = () => {
   const [clientes, setClientes] = useState();
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   const cargarDatos = async () => {
-    const responseInmuebles = await getData("/inmuebles");
-    const responseClientes = await getData("/clientes");
-    //filtramos solo inmuebles disponibles
-    let disponibles = responseInmuebles?.data?.filter(
-      (inm) => inm.estado != "Alquilado"
-    );
-    setInmuebles(disponibles);
+    setLoading(true);
+    try {
+      const responseInmuebles = await getData("/inmuebles");
+      const responseClientes = await getData("/clientes");
+      //filtramos solo inmuebles disponibles
+      let disponibles = responseInmuebles?.data?.filter(
+        (inm) => inm?.estado?.toLowerCase() != "Alquilado"
+      );
+      setInmuebles(disponibles);
 
-    //filtramos todos menos los propietarios
-    let resultado = responseClientes?.data?.filter(
-      (cliente) => cliente.tipoCliente != "PROPIETARIO"
-    );
-    setClientes(resultado);
+      //filtramos todos menos los propietarios
+      let resultado = responseClientes?.data?.filter(
+        (cliente) => cliente?.tipoCliente?.toLowerCase() != "propietario"
+      );
+      setClientes(resultado);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     cargarDatos();
   }, []);
 
-  const calcularImporte = () => {
-    // let inmueble = inmuebles.find((inm) => inm.id == contrato.inmueble.id);
-    // const fechaFin = new Date(contrato.fechaFin);
-    // const fechaInicio = new Date(contrato.fechaInicio);
-    // // console.log(inmueble?.cliente);
-    // let diferencia = fechaFin.getTime() - fechaInicio.getTime();
-    // const dias = Math.round(diferencia / (1000 * 60 * 60 * 24));
-    // setContrato({
-    //   ...contrato,
-    //   inmueble: inmueble,
-    //   dias: dias,
-    //   importe: dias * inmueble?.precioAlquiler,
-    //   meses: Number(dias / 30).toFixed(1),
-    //   precioPorDia: inmueble?.precioAlquiler,
-    //   precioPorMes: inmueble?.precioAlquiler * 30,
-    // });
-  };
-
-  useEffect(() => {
-    if (contrato.fechaFin != "") {
-      calcularImporte();
-    }
-  }, [contrato.fechaFin, contrato.inmueble]);
-
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(contrato);
-      await postData("/alquiler", contrato);
-      navigate("/alquiler");
+      toast.promise(postData("/contratos", contrato), {
+        loading: "Cargando...",
+        success: (response) => {
+          navigate("/contratos");
+          setContrato(null);
+          return "Contrato creado exitosamente";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error al generar un contrato";
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -85,9 +78,9 @@ export const FormAlquiler = () => {
     <main className="container-fluid">
       <div>
         <h4 className="border-start border-primary text-primary ps-1">
-          Nuevo Alquiler
+          Nuevo Contrato
         </h4>
-        <p>Proceso para la generación de nuevo alquiler.</p>
+        <p>Proceso para la generación de nuevo contrato.</p>
       </div>
       <form onSubmit={onSubmit}>
         <div className="bloque d-flex flex-column align-items-stretch gap-2 justify-content-between">
@@ -133,19 +126,13 @@ export const FormAlquiler = () => {
                   {inmuebles?.map((inm) => {
                     return (
                       <option value={inm.id}>
-                        {inm.titulo + " - " + inm.direccion}
+                        {inm?.titulo + " - " + inm?.direccion}
                       </option>
                     );
                   })}
                 </select>
               </div>
             </div>
-            <p className="text-end">
-              Precio alquiler:{" "}
-              <span className="fw-bold">
-                {formatearPrecio(contrato.inmueble?.precioAlquiler) + " / dia"}
-              </span>
-            </p>
           </div>
           <div className="mb-3 col-12 col-md">
             <h6 className="bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
@@ -220,7 +207,7 @@ export const FormAlquiler = () => {
                 <input
                   required
                   type="date"
-                  value={contrato.fechaInicio}
+                  value={contrato?.fechaInicio}
                   onChange={(e) =>
                     setContrato({
                       ...contrato,
@@ -237,10 +224,10 @@ export const FormAlquiler = () => {
                   Fecha Fin
                 </label>
                 <input
-                  value={contrato.fechaFin}
+                  value={contrato?.fechaFin}
                   onChange={(e) => {
                     const fechaFinValue = e.target.value;
-                    const fechaInicioValue = contrato.fechaInicio;
+                    const fechaInicioValue = contrato?.fechaInicio;
 
                     if (!fechaFinValue) {
                       window.alert("Por favor, selecciona una fecha válida.");
@@ -267,7 +254,10 @@ export const FormAlquiler = () => {
               </div>
             </div>
           </div>
-          <div hidden={contrato.fechaFin == ""} className="mb-3  col-12 col-md">
+          <div
+            hidden={contrato?.fechaFin == ""}
+            className="mb-3  col-12 col-md"
+          >
             <h6 className=" bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
               Pagos
             </h6>
@@ -297,7 +287,7 @@ export const FormAlquiler = () => {
                 </select>
               </div>
               <div hidden className="form-group col-auto">
-                <div hidden={contrato.meses < 1} className="form-check">
+                <div hidden={contrato?.meses < 1} className="form-check">
                   <input
                     className="form-check-input"
                     type="radio"
@@ -330,20 +320,20 @@ export const FormAlquiler = () => {
                       currency: "ARS",
                       style: "currency",
                       currencyDisplay: "narrowSymbol",
-                    }).format(Number.parseInt(contrato.importe || 0))}
+                    }).format(Number.parseInt(contrato?.importe || 0))}
                   </strong>
                   <br />
-                  Dias: <strong>{contrato.dias}</strong>
+                  Dias: <strong>{contrato?.dias}</strong>
                   <br />
-                  Meses: <strong>{contrato.meses}</strong>
+                  Meses: <strong>{contrato?.meses}</strong>
                 </p>
                 <p>
                   <strong>
-                    {formatearPrecio(contrato.precioPorMes)} / mes
+                    {formatearPrecio(contrato?.precioPorMes)} / mes
                   </strong>
                   <br />
                   <strong>
-                    {formatearPrecio(contrato.precioPorDia)} / dia
+                    {formatearPrecio(contrato?.precioPorDia)} / dia
                   </strong>
                 </p>
               </div>
@@ -374,16 +364,16 @@ export const FormAlquiler = () => {
             </div>
           </div>
         </div>
-        <div className="bloque mt-4">
+        <div className="bloque mt-4 d-flex justify-content-end">
           <button
             type="reset"
-            onClick={() => navigate("/alquiler")}
+            onClick={() => navigate("/contratos")}
             className="btn btn-outline-primary me-2"
           >
             Cancelar
           </button>
           <button type="submit" className="btn btn-primary">
-            Alquilar
+            Confirmar
           </button>
         </div>
       </form>

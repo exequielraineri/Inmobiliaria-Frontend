@@ -5,7 +5,6 @@ import { useContext, useEffect, useState } from "react";
 import { ModalCliente } from "../../components/ModalCliente/ModalCliente";
 import { deleteData, getData } from "../../service/apiService";
 import { Loading } from "../../components/Loading/Loading";
-import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { toast } from "sonner";
 
 export const Clientes = ({ mostrarAlerta }) => {
@@ -40,12 +39,14 @@ export const Clientes = ({ mostrarAlerta }) => {
       toast.promise(deleteData("clientes/" + id), {
         loading: "Cargando...",
         success: (response) => {
-          console.log(response);
+          actualizarTabla();
           return "Eliminacion exitosa";
         },
-        error: "Error al eliminar",
+        error: (response) => {
+          console.log(response);
+          return "Error";
+        },
       });
-      actualizarTabla();
     } catch (error) {
       console.log(error);
     }
@@ -142,11 +143,11 @@ export const Clientes = ({ mostrarAlerta }) => {
                 return (
                   <tr>
                     <td>{++index}</td>
-                    <td>{cliente?.nombre}</td>
-                    <td>{cliente?.apellido}</td>
-                    <td>{cliente?.telefono}</td>
-                    <td>{cliente?.provincia}</td>
-                    <td>{cliente?.tipoCliente}</td>
+                    <td>{cliente?.nombre || "-"}</td>
+                    <td>{cliente?.apellido || "-"}</td>
+                    <td>{cliente?.telefono || "-"}</td>
+                    <td>{cliente?.provincia || "-"}</td>
+                    <td>{cliente?.tipoCliente || "-"}</td>
                     <td>
                       <span>
                         {new Date(cliente?.fechaRegistro).toLocaleDateString()}
@@ -162,21 +163,21 @@ export const Clientes = ({ mostrarAlerta }) => {
                             setClienteSelect(cliente);
                             setShowModal(true);
                           }}
-                          className="btn btn-warning btn-sm"
+                          className="btn btn-outline-warning btn-sm"
                         >
                           <i className="fa-solid fa-edit"></i>
                         </button>
                         <button
                           onClick={() => {
                             if (
-                              window.confirm(
+                              confirm(
                                 "¿Estás seguro de que deseas eliminar este cliente?"
                               )
                             ) {
                               eliminarCliente(cliente.id);
                             }
                           }}
-                          className="btn btn-danger btn-sm"
+                          className="btn btn-outline-danger btn-sm"
                         >
                           <i className="fa-solid fa-trash"></i>
                         </button>

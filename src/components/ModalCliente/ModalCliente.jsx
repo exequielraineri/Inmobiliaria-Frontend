@@ -35,43 +35,28 @@ export const ModalCliente = ({
     e.preventDefault();
     setLoading(true);
     try {
-      toast.promise(
-        cliente.id == null
-          ? postData("clientes", cliente)
-          : putData("clientes/" + cliente.id, cliente),
-        {
-          loading: "Cargando...",
-          success: (response) => {
-            console.log(response);
-            actualizarTabla();
-            setCliente(inicializarCliente);
-            setShowModal(false);
-            return cliente.id == null
-              ? "Ingreso extoso"
-              : "Modificación exitosa";
-          },
-          error: "Error",
-        }
-      );
+      let response;
+      if (cliente?.id == null) {
+        response = postData("clientes", cliente);
+      } else {
+        response = putData("clientes/" + cliente.id, cliente);
+      }
 
-      // if (cliente.id == null) {
-      //   toast.promise(postData("clientes", cliente), {
-      //     loading: "Cargando...",
-      //     success: (response) => {
-      //       return "Ingreso exitoso";
-      //     },
-      //     error: "Error",
-      //   });
-      // } else {
-      //   toast.promise(putData("clientes/" + cliente.id, cliente), {
-      //     loading: "Cargando...",
-      //     success: "Modificación exitosa",
-      //     error: "Error",
-      //   });
-      // }
+      toast.promise(response, {
+        loading: "Cargando...",
+        success: (response) => {
+          actualizarTabla();
+          setCliente(inicializarCliente);
+          setShowModal(false);
+          return "Accion exitosa";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error al guardar cliente";
+        },
+      });
     } catch (error) {
       console.log(error);
-      toast.error(error?.message);
     } finally {
       setLoading(false);
     }

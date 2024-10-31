@@ -6,9 +6,10 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loading } from "../../components/Loading/Loading";
 import { tipo_inmuebles } from "../../data/data";
+import { toast } from "sonner";
 export const FormularioIngresoInmueble = () => {
   const [tipoInmuele, setTipoInmueble] = useState(null);
-  const [isVenta, setIsVenta] = useState(false);
+  const [venta, setventa] = useState(false);
   const [imagenes, setImagenes] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,8 +20,8 @@ export const FormularioIngresoInmueble = () => {
     direccion: "",
     precioAlquiler: "",
     descripcion: "",
-    isVenta: false,
-    propietario: { id: 1 },
+    venta: false,
+    propietario: { id: null },
     impMunicipales: "",
     impInmobiliarios: "",
     expensas: "",
@@ -34,50 +35,49 @@ export const FormularioIngresoInmueble = () => {
       let response;
 
       if (inmueble?.id != null) {
-        response = await putData("inmuebles/" + inmueble.id, inmueble);
+        response = putData("inmuebles/" + inmueble.id, inmueble);
       } else {
-        response = await postData("inmuebles", inmueble);
-
-        // if (imagenes.length > 0) {
-        //   const formData = new FormData();
-
-        //   for (let i = 0; i < imagenes.length; i++) {
-        //     const element = imagenes[i];
-        //     formData.append("imagenes", element);
-        //   }
-        //   await axios.post(
-        //     API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
-        //     formData,
-        //     {
-        //       headers: {
-        //         "Content-Type": "multipart/form-data",
-        //       },
-        //     }
-        //   );
-        // }
+        response = postData("inmuebles", inmueble);
       }
 
-      if (imagenes.length > 0) {
-        const formData = new FormData();
+      toast.promise(response, {
+        loading: "Cargando...",
+        success: (response) => {
+          if (imagenes.length > 0) {
+            const formData = new FormData();
 
-        for (let i = 0; i < imagenes.length; i++) {
-          const element = imagenes[i];
-          formData.append("imagenes", element);
-        }
-        console.log(response);
+            for (let i = 0; i < imagenes.length; i++) {
+              const element = imagenes[i];
+              formData.append("imagenes", element);
+            }
 
-        await axios.post(
-          API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            toast.promise(
+              axios.post(
+                API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              ),
+              {
+                loading: "Subiendo imagenes...",
+                success: (response) => {
+                  return "Subida completada";
+                },
+                error: "Error al subir imagenes",
+              }
+            );
           }
-        );
-      }
-
-      navigate("/inmuebles");
+          navigate("/inmuebles");
+          return "Accion exitosa";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error al guardar inmueble";
+        },
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -87,7 +87,6 @@ export const FormularioIngresoInmueble = () => {
 
   const cargarInmueble = async () => {
     setLoading(true);
-
     const response = await getData("inmuebles/" + id);
     setInmueble(response.data);
     setTipoInmueble(response.data.tipoInmueble);
@@ -97,7 +96,6 @@ export const FormularioIngresoInmueble = () => {
   const cargarPropietarios = async () => {
     try {
       const response = await getData("clientes?tipoCliente=Propietario");
-
       setPropietarios(response?.data);
     } catch (error) {
       console.log(error);
@@ -193,7 +191,7 @@ export const FormularioIngresoInmueble = () => {
                             precioAlquiler: e.target.value,
                           })
                         }
-                        required={true}
+                        required={inmueble?.venta == false}
                         type="number"
                         placeholder={"Ingrese un precio"}
                       />
@@ -224,25 +222,25 @@ export const FormularioIngresoInmueble = () => {
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            name="isVenta"
-                            value={isVenta}
+                            name="venta"
+                            value={venta}
                             onChange={(e) => {
-                              setIsVenta(e.target.checked);
+                              setventa(e.target.checked);
                               setInmueble({
                                 ...inmueble,
-                                isVenta: e.target.checked,
+                                venta: e.target.checked,
                               });
                             }}
-                            id="isVenta"
+                            id="venta"
                           />
                           <label
                             className="form-check-label fw-bold"
-                            htmlFor="isVenta"
+                            htmlFor="venta"
                           >
                             Disponible para venta
                           </label>
                         </div>
-                        {isVenta && (
+                        {venta && (
                           <input
                             value={inmueble?.precioVenta}
                             onChange={(e) =>
@@ -254,7 +252,7 @@ export const FormularioIngresoInmueble = () => {
                             className="form-control"
                             type="number"
                             min={1}
-                            required
+                            required={inmueble.venta}
                             id="precioVenta"
                             name="precioVenta"
                             placeholder="Ingrese un precio"
@@ -280,13 +278,14 @@ export const FormularioIngresoInmueble = () => {
                       </div>
                       <div className="col">
                         <label className="form-label mb-1">
-                          Listado de propietarios
+                          Listado de propietarios {inmueble?.propietario?.id}
                         </label>
                         <select
                           required
                           className="form-select"
                           name="propietario"
                           id="propietario"
+                          defaultValue={""}
                           value={inmueble?.propietario?.id}
                           onChange={(e) =>
                             setInmueble({
@@ -297,7 +296,7 @@ export const FormularioIngresoInmueble = () => {
                             })
                           }
                         >
-                          <option value="0" selected disabled>
+                          <option value="" disabled>
                             Selecciona un propietario
                           </option>
                           {propietarios?.map((propietario) => {
@@ -350,43 +349,40 @@ export const FormularioIngresoInmueble = () => {
                         <>
                           <div className="form-check">
                             <input
-                              value={inmueble?.isAccesoRuta}
+                              value={inmueble?.accesoRuta}
                               onChange={(e) =>
                                 setInmueble({
                                   ...inmueble,
-                                  isAccesoRuta: e.target.checked,
+                                  accesoRuta: e.target.checked,
                                 })
                               }
                               className="form-check-input"
                               type="checkbox"
-                              name="isAccesoRuta"
-                              id="isAccesoRuta"
+                              name="accesoRuta"
+                              id="accesoRuta"
                             />
                             <label
                               className="form-check-label"
-                              htmlFor="isAccesoRuta"
+                              htmlFor="accesoRuta"
                             >
                               Acceso Ruta
                             </label>
                           </div>
                           <div className="form-check">
                             <input
-                              value={inmueble?.isRiego}
+                              value={inmueble?.riego}
                               onChange={(e) =>
                                 setInmueble({
                                   ...inmueble,
-                                  isRiego: e.target.checked,
+                                  riego: e.target.checked,
                                 })
                               }
                               className="form-check-input"
                               type="checkbox"
-                              name="isRiego"
-                              id="isRiego"
+                              name="riego"
+                              id="riego"
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="isRiego"
-                            >
+                            <label className="form-check-label" htmlFor="riego">
                               Riego
                             </label>
                           </div>
@@ -396,21 +392,21 @@ export const FormularioIngresoInmueble = () => {
                       {tipoInmuele == "OFICINA" && (
                         <div className="form-check">
                           <input
-                            value={inmueble?.isVidriera}
+                            value={inmueble?.vidrieraCalle}
                             onChange={(e) =>
                               setInmueble({
                                 ...inmueble,
-                                isVidriera: e.target.checked,
+                                vidrieraCalle: e.target.checked,
                               })
                             }
                             className="form-check-input"
                             type="checkbox"
-                            name="isVidriera"
-                            id="isVidriera"
+                            name="vidrieraCalle"
+                            id="vidrieraCalle"
                           />
                           <label
                             className="form-check-label"
-                            htmlFor="isVidriera"
+                            htmlFor="vidrieraCalle"
                           >
                             Vidriera a la calle
                           </label>

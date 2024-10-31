@@ -15,7 +15,6 @@ export const Login = () => {
 
   const onSubmitLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
       toast.promise(postData("/autenticacion/login", dataForm), {
         loading: "Cargando...",
@@ -24,7 +23,10 @@ export const Login = () => {
           sessionStorage.setItem("usuario", JSON.stringify(data));
           return "Bienvenido, " + data?.nombre + " " + data?.apellido;
         },
-        error: "Error",
+        error: (response) => {
+          console.log(response);
+          return "Error al iniciar sesion";
+        },
       });
       // const response = await postData("/autenticacion/login", dataForm);
       // setUsuario(response?.data);
@@ -35,8 +37,6 @@ export const Login = () => {
       } else {
         setError();
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -54,7 +54,6 @@ export const Login = () => {
         }}
       >
         <h3 className="border-bottom">Inicio de Sesión</h3>
-        {loading && <Loading texto={"Cargando..."} />}
         <form onSubmit={onSubmitLogin}>
           <div>
             <label className="form-label mb-1" htmlFor="correo">

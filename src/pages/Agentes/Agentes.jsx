@@ -4,6 +4,7 @@ import { provincias, tipo_clientes } from "../../data/data";
 import { useEffect, useState } from "react";
 import { deleteData, getData, postData } from "../../service/apiService";
 import { Loading } from "../../components/Loading/Loading";
+import { toast } from "sonner";
 
 export const Agentes = () => {
   const [showModal, setShowModal] = useState(false);
@@ -31,26 +32,40 @@ export const Agentes = () => {
 
   const onSubmitAgente = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      await postData("/usuarios", usuario);
-      setShowModal(false);
+      toast.promise(postData("/usuarios", usuario), {
+        loading: "Cargando...",
+        success: (response) => {
+          setShowModal(false);
+          setUsuario(null);
+          cargarUsuarios();
+          return "Ingreso exitoso";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error al guardar agente";
+        },
+      });
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
-      setUsuario(null);
-      cargarUsuarios();
     }
   };
 
   const eliminarUsuario = async (id) => {
     try {
-      await deleteData("/usuarios/" + id);
+      toast.promise(deleteData("/usuarios/" + id), {
+        loading: "Cargando...",
+        success: (response) => {
+          cargarUsuarios();
+          return "Eliminacion exitosa";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error al eliminar usuario";
+        },
+      });
     } catch (error) {
       console.log(error);
-    } finally {
-      cargarUsuarios();
     }
   };
 
@@ -311,19 +326,19 @@ export const Agentes = () => {
       </div>
       <div className="bloque mt-4">
         <h3>Listado </h3>
-        <p className="pb-0 mb-0 fw-ligth">Encontrados</p>
+        <p className="pb-0 mb-0 fw-ligth">Encontrados {usuarios?.length}</p>
         <div className="table-responsive">
           <table className="table table-dense table-sm table-striped table-hover">
             <thead>
               <tr>
-                <th className="col-1">#</th>
+                <th className="col-auto">#</th>
                 <th className="col">Nombre</th>
                 <th className="col">Apellido</th>
                 <th className="col">Email</th>
                 <th className="col">Provincia</th>
                 <th className="col">Rol</th>
-                <th className="col">Antiguedad</th>
-                <th className="col-1"></th>
+                <th className="col">Fecha Registro</th>
+                <th className="col-auto"></th>
               </tr>
             </thead>
             <tbody>
@@ -332,11 +347,11 @@ export const Agentes = () => {
                 return (
                   <tr>
                     <td>{++index}</td>
-                    <td>{usuario?.nombre}</td>
-                    <td>{usuario?.apellido}</td>
-                    <td>{usuario?.correo}</td>
-                    <td>{usuario?.provincia}</td>
-                    <td>{usuario?.rol}</td>
+                    <td>{usuario?.nombre || "-"}</td>
+                    <td>{usuario?.apellido || "-"}</td>
+                    <td>{usuario?.correo || "-"}</td>
+                    <td>{usuario?.provincia || "-"}</td>
+                    <td>{usuario?.rol || "-"}</td>
                     <td>
                       {new Date(usuario?.fechaRegistro).toLocaleDateString()}
                     </td>
@@ -350,7 +365,7 @@ export const Agentes = () => {
                             setUsuario(usuario);
                             setShowModal(true);
                           }}
-                          className="btn btn-warning btn-sm"
+                          className="btn btn-outline-warning btn-sm"
                         >
                           <i className="fa-solid fa-edit"></i>
                         </button>
@@ -365,7 +380,7 @@ export const Agentes = () => {
                               eliminarUsuario(usuario?.id);
                             }
                           }}
-                          className="btn btn-danger  btn-sm"
+                          className="btn btn-outline-danger  btn-sm"
                         >
                           <i className="fa-solid fa-trash "></i>
                         </button>

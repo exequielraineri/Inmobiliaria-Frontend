@@ -1,26 +1,26 @@
-import { useState } from "react";
+/* eslint-disable react/jsx-key */
+import { useEffect, useState } from "react";
 import { Modal, ModalBody, ModalHeader, ModalTitle } from "react-bootstrap";
+import { getData } from "../../service/apiService";
 
 export const Consultas = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [consulta, setConsulta] = useState({
-    cliente: {
-      nombre: "Exequiel",
-      apellido: "Raineri",
-      email: "exe@gmail.com",
-    },
-    inmueble: {
-      titulo: "Casa Quinta",
-      tipo: "Casa",
-    },
-    operacion: "Alquiler",
-    mensaje: "Buenas que tal?, queria alquilar por 1 mes",
-    estado: "PENDIENTE",
-    fechaConsulta: new Date().toLocaleDateString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  });
+  const [consultas, setConsultas] = useState([]);
+  const [consulta, setConsulta] = useState(null);
+
+  const cargarConsultas = async () => {
+    try {
+      const response = await getData("/consultas");
+      setConsultas(response?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    cargarConsultas();
+  }, []);
+
   return (
     <main>
       <div className="bloque">
@@ -47,7 +47,7 @@ export const Consultas = () => {
       </div>
       <div className="bloque mt-4">
         <h3>Listado </h3>
-        <p className="pb-0 mb-0 fw-ligth">Encontrados</p>
+        <p className="pb-0 mb-0 fw-ligth">Encontrados {consulta?.length}</p>
         <div className="table-responsive">
           <table className="table table-dense table-sm table-striped table-hover">
             <thead>
@@ -62,32 +62,39 @@ export const Consultas = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Raineri Exequiel</td>
-                <td>Casa Quinta</td>
-                <td>ALQUILER</td>
-                <td>PEDIENTE</td>
-                <td>
-                  {new Date().toLocaleDateString(undefined, {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </td>
-                <td>
-                  <div className="d-flex gap-1">
-                    <button
-                      onClick={() => setIsOpenModal(true)}
-                      className="btn btn-primary btn-sm"
-                    >
-                      <i className="fa-solid fa-search"></i>
-                    </button>
-                    <button className="btn btn-danger btn-sm">
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              {consultas?.map((consulta, index) => {
+                return (
+                  <tr>
+                    <td>{++index}</td>
+                    <td>{consulta?.cliente?.nombre || "-"}</td>
+                    <td>{consulta?.inmueble?.titulo || "-"}</td>
+                    <td>ALQUILER</td>
+                    <td>PEDIENTE</td>
+                    <td>
+                      {new Date(consulta?.fechaRegistro).toLocaleDateString(
+                        undefined,
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                    </td>
+                    <td>
+                      <div className="d-flex gap-1">
+                        <button
+                          onClick={() => setIsOpenModal(true)}
+                          className="btn btn-outline-primary btn-sm"
+                        >
+                          <i className="fa-solid fa-search"></i>
+                        </button>
+                        <button className="btn btn-outline-danger btn-sm">
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -96,38 +103,38 @@ export const Consultas = () => {
       <Modal show={isOpenModal} size="lg">
         <ModalHeader>
           <ModalTitle>
-            Detalle Consulta - <i>{consulta.estado}</i>
+            Detalle Consulta - <i>{consulta?.estado}</i>
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
           <div className="d-flex justify-content-between container">
-            <cite className="d-inline">Operación: {consulta.operacion}</cite>
-            <cite className="d-inline">{consulta.fechaConsulta}</cite>
+            <cite className="d-inline">Operación: {consulta?.operacion}</cite>
+            <cite className="d-inline">{consulta?.fechaConsulta}</cite>
           </div>
           <div className="container my-2">
             <h5 className="border-bottom">Datos del cliente</h5>
             <p>
               Nombre y Apellido:{" "}
               <strong>
-                {consulta.cliente.apellido + " " + consulta.cliente.nombre}
+                {consulta?.cliente.apellido + " " + consulta?.cliente.nombre}
               </strong>
               <br />
-              Email: <strong>{consulta.cliente.email}</strong>
+              Email: <strong>{consulta?.cliente.email}</strong>
             </p>
           </div>
           <div className="container">
             <h5 className="border-bottom">Datos del Inmueble</h5>
             <p>
-              Titulo: <strong>{consulta.inmueble.titulo}</strong>
+              Titulo: <strong>{consulta?.inmueble.titulo}</strong>
               <br />
-              Tipo: <strong>{consulta.inmueble.tipo}</strong>
+              Tipo: <strong>{consulta?.inmueble.tipo}</strong>
             </p>
           </div>
           <div className="container">
             <p>
               Mensaje: <br />
               <strong>
-                <i>{consulta.mensaje}</i>
+                <i>{consulta?.mensaje}</i>
               </strong>
             </p>
           </div>

@@ -4,17 +4,18 @@ import { Link } from "react-router-dom";
 import { deleteData, getData } from "../../service/apiService";
 import { Imagen } from "../../components/Imagen/Imagen";
 import { Loading } from "../../components/Loading/Loading";
+import { toast } from "sonner";
 
 export const Inmuebles = () => {
-  const [listInmuebles, setListInmuebles] = useState([]);
+  const [inmuebles, setInmuebles] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const cargarInmuebles = async () => {
     setLoading(true);
     try {
       const response = await getData("inmuebles");
-
-      setListInmuebles(response.data);
+      console.log(response);
+      setInmuebles(response.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -32,7 +33,17 @@ export const Inmuebles = () => {
 
   const eliminarInmueble = (id) => {
     if (confirm("Seguro desea eliminar el inmueble?")) {
-      deleteData("inmuebles/" + id).then(() => actualizarTabla());
+      toast.promise(deleteData("inmuebles/" + id), {
+        loading: "Cargando...",
+        success: (response) => {
+          actualizarTabla();
+          return "Eliminacion exitosa";
+        },
+        error: (response) => {
+          console.log(response);
+          return "Error";
+        },
+      });
     }
   };
 
@@ -104,7 +115,7 @@ export const Inmuebles = () => {
       </div>
       <div className="mt-4 bloque">
         <h3>Listado </h3>
-        <p className="pb-0 mb-0 fw-ligth">Encontrados {listInmuebles.length}</p>
+        <p className="pb-0 mb-0 fw-ligth">Encontrados {inmuebles.length}</p>
         <div className="table-responsive">
           <table className="table table-hover table-ligth table-striped table-sm ">
             <thead>
@@ -123,7 +134,9 @@ export const Inmuebles = () => {
             </thead>
 
             <tbody>
-              {listInmuebles?.map((inmueble, index) => {
+              {inmuebles?.map((inmueble, index) => {
+                console.log(inmueble);
+
                 return (
                   <tr
                     style={{
@@ -137,16 +150,16 @@ export const Inmuebles = () => {
                         <Imagen imagen={inmueble?.imagenes[0]} width={100} />
                       )}
                     </td>
-                    <td>{inmueble?.titulo}</td>
+                    <td>{inmueble?.titulo || "-"}</td>
                     <td>
                       {inmueble.propietario?.apellido +
                         " " +
                         inmueble.propietario?.nombre}
                     </td>
-                    <td>{inmueble.tipoInmueble}</td>
-                    <td>{inmueble.direccion}</td>
+                    <td>{inmueble.tipoInmueble || "-"}</td>
+                    <td>{inmueble.direccion || "-"}</td>
                     <td>
-                      {inmueble.isVenta
+                      {inmueble.venta
                         ? new Intl.NumberFormat("en-ES", {
                             currency: "ARS",
                             style: "currency",
@@ -155,13 +168,15 @@ export const Inmuebles = () => {
                         : "-"}
                     </td>
                     <td>
-                      {new Intl.NumberFormat("en-ES", {
-                        currency: "ARS",
-                        style: "currency",
-                        currencyDisplay: "narrowSymbol",
-                      }).format(inmueble.precioAlquiler)}
+                      {inmueble.venta == false
+                        ? new Intl.NumberFormat("en-ES", {
+                            currency: "ARS",
+                            style: "currency",
+                            currencyDisplay: "narrowSymbol",
+                          }).format(inmueble.precioAlquiler)
+                        : "-"}
                     </td>
-                    <td>{inmueble?.estado}</td>
+                    <td>{inmueble?.estado || "-"}</td>
                     <td>
                       <div className="d-flex gap-1">
                         <Link className="btn btn-sm btn-outline-info">
