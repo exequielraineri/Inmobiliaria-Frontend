@@ -124,7 +124,7 @@ export const LayoutPrincipal = () => {
             </div> */}
           </li>
 
-          <li
+          {/* <li
             className={`sidebar-item ${
               location.pathname.endsWith("consultas") ? "bg-primary" : ""
             }`}
@@ -133,8 +133,17 @@ export const LayoutPrincipal = () => {
               <i className="fa-solid fa-archive"></i>
               <span>Consultas</span>
             </Link>
+          </li> */}
+          <li
+            className={`sidebar-item ${
+              location.pathname.endsWith("contratos") ? "bg-primary" : ""
+            }`}
+          >
+            <Link title="Contratos" to={"/contratos"} className="sidebar-link">
+              <i className="fa-solid fa-shop"></i>
+              <span>Contratos</span>
+            </Link>
           </li>
-
           <hr className="text-white" />
 
           <li
@@ -151,26 +160,18 @@ export const LayoutPrincipal = () => {
               <span>Transacciones</span>
             </Link>
           </li>
-          <li
-            className={`sidebar-item ${
-              location.pathname.endsWith("agentes") ? "bg-primary" : ""
-            }`}
-          >
-            <Link title="Agentes" to={"/agentes"} className="sidebar-link">
-              <i className="fa-solid fa-users"></i>
-              <span>Agentes</span>
-            </Link>
-          </li>
-          <li
-            className={`sidebar-item ${
-              location.pathname.endsWith("contratos") ? "bg-primary" : ""
-            }`}
-          >
-            <Link title="Contratos" to={"/contratos"} className="sidebar-link">
-              <i className="fa-solid fa-shop"></i>
-              <span>Contratos</span>
-            </Link>
-          </li>
+          {usuario?.rol == "ADMIN" && (
+            <li
+              className={`sidebar-item ${
+                location.pathname.endsWith("agentes") ? "bg-primary" : ""
+              }`}
+            >
+              <Link title="Agentes" to={"/agentes"} className="sidebar-link">
+                <i className="fa-solid fa-users"></i>
+                <span>Agentes</span>
+              </Link>
+            </li>
+          )}
         </ul>
         <div className="sidebar-footer">
           <a

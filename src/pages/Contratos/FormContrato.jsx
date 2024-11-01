@@ -1,14 +1,13 @@
 /* eslint-disable react/jsx-key */
-import React, { useContext, useEffect, useState } from "react";
-import { ModalCliente } from "../../components/ModalCliente/ModalCliente";
-import { getData, postData } from "../../service/apiService";
-import { formatearPrecio } from "../../data/funciones";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { toast } from "sonner";
+import { ModalCliente } from "../../components/ModalCliente/ModalCliente";
+import { UsuarioContexto } from "../../Context/UsuarioContext";
+import { formatearPrecio } from "../../data/funciones";
+import { getData, postData } from "../../service/apiService";
 export const FormContrato = () => {
   const { usuario } = useContext(UsuarioContexto);
-
   const [contrato, setContrato] = useState({
     inmueble: {
       id: null,
@@ -21,12 +20,15 @@ export const FormContrato = () => {
     },
     fechaInicio: "",
     fechaFin: "",
+    tipoContrato: "",
   });
   const [inmuebles, setInmuebles] = useState();
+  const [inmueblesFiltrados, setInmueblesFiltrados] = useState();
   const [clientes, setClientes] = useState();
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
   const cargarDatos = async () => {
     setLoading(true);
     try {
@@ -37,7 +39,7 @@ export const FormContrato = () => {
         (inm) => inm?.estado?.toLowerCase() != "Alquilado"
       );
       setInmuebles(disponibles);
-
+      setInmueblesFiltrados(disponibles);
       //filtramos todos menos los propietarios
       let resultado = responseClientes?.data?.filter(
         (cliente) => cliente?.tipoCliente?.toLowerCase() != "propietario"
@@ -53,6 +55,16 @@ export const FormContrato = () => {
   useEffect(() => {
     cargarDatos();
   }, []);
+
+  useEffect(() => {
+    if (inmuebles) {
+      let isVenta = contrato?.tipoContrato?.toLowerCase() == "venta";
+      let inmueblesFiltrados = inmuebles?.filter(
+        (inmueble) => inmueble?.venta == isVenta
+      );
+      setInmueblesFiltrados(inmueblesFiltrados);
+    }
+  }, [contrato?.tipoContrato]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -82,7 +94,37 @@ export const FormContrato = () => {
         </h4>
         <p>Proceso para la generación de nuevo contrato.</p>
       </div>
-      <form onSubmit={onSubmit}>
+      <div className="mb-3 col-12 col-md">
+        <h6 className=" bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
+          Operación
+        </h6>
+        <div className="row col-12 col-md-7">
+          <div className="form-group col">
+            <label className="form-label mb-1" htmlFor="inmueble-select">
+              Tipo de Contrato
+            </label>
+
+            <select
+              defaultValue={""}
+              value={contrato?.tipoContrato}
+              onChange={(e) => {
+                setContrato({
+                  ...contrato,
+                  tipoContrato: e.target.value,
+                });
+              }}
+              className="form-select"
+              name="inmueble-select"
+              id="inmueble-select"
+            >
+              <option value="">Seleccione...</option>
+              <option value="ALQUILER">Alquiler</option>
+              <option value="VENTA">Venta</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <form hidden={contrato?.tipoContrato == ""} onSubmit={onSubmit}>
         <div className="bloque d-flex flex-column align-items-stretch gap-2 justify-content-between">
           <div className="mb-3 col-12 col-md">
             <h6 className=" bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
@@ -115,7 +157,8 @@ export const FormContrato = () => {
                       inmueble: { id: Number.parseInt(e.target.value) },
                     });
                   }}
-                  required
+                  // required
+
                   className="form-select"
                   name="inmueble-select"
                   id="inmueble-select"
@@ -123,9 +166,9 @@ export const FormContrato = () => {
                   <option value="" disabled>
                     Seleccione...
                   </option>
-                  {inmuebles?.map((inm) => {
+                  {inmueblesFiltrados?.map((inm) => {
                     return (
-                      <option value={inm.id}>
+                      <option key={inm?.id} value={inm?.id}>
                         {inm?.titulo + " - " + inm?.direccion}
                       </option>
                     );
@@ -172,7 +215,8 @@ export const FormContrato = () => {
                       cliente: { id: Number.parseInt(e.target.value) },
                     });
                   }}
-                  required
+                  // required
+
                   className="form-select"
                   name="cliente-select"
                   id="cliente-select"
@@ -195,69 +239,73 @@ export const FormContrato = () => {
               </div>
             </div>
           </div>
-          <div className="mb-3 col-12 col-md  ">
-            <h6 className=" bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
-              Detalles del Contrato
-            </h6>
-            <div className="row col-12 col-md-7">
-              <div className="form-group col">
-                <label className="form-label mb-1" htmlFor="fechaInicio">
-                  Fecha Inicio
-                </label>
-                <input
-                  required
-                  type="date"
-                  value={contrato?.fechaInicio}
-                  onChange={(e) =>
-                    setContrato({
-                      ...contrato,
-                      fechaInicio: e.target.value,
-                    })
-                  }
-                  id="fechaInicio"
-                  name="fechaInicio"
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group col">
-                <label className="form-label mb-1" htmlFor="fechaFin">
-                  Fecha Fin
-                </label>
-                <input
-                  value={contrato?.fechaFin}
-                  onChange={(e) => {
-                    const fechaFinValue = e.target.value;
-                    const fechaInicioValue = contrato?.fechaInicio;
+          {contrato?.tipoContrato?.toLowerCase() == "alquiler" && (
+            <div className="mb-3 col-12 col-md  ">
+              <h6 className=" bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
+                Detalles del Contrato
+              </h6>
+              <div className="row col-12 col-md-7">
+                <div className="form-group col">
+                  <label className="form-label mb-1" htmlFor="fechaInicio">
+                    Fecha Inicio
+                  </label>
+                  <input
+                    // required
 
-                    if (!fechaFinValue) {
-                      window.alert("Por favor, selecciona una fecha válida.");
-                      return;
-                    }
-
-                    if (fechaInicioValue && fechaFinValue <= fechaInicioValue) {
-                      window.alert(
-                        "La fecha final debe ser mayor que la fecha de inicio."
-                      );
-                    } else {
+                    type="date"
+                    value={contrato?.fechaInicio}
+                    onChange={(e) =>
                       setContrato({
                         ...contrato,
-                        fechaFin: e.target.value,
-                      });
+                        fechaInicio: e.target.value,
+                      })
                     }
-                  }}
-                  required
-                  type="date"
-                  id="fechaFin"
-                  name="fechaFin"
-                  className="form-control"
-                />
+                    id="fechaInicio"
+                    name="fechaInicio"
+                    className="form-control"
+                  />
+                </div>
+                <div className="form-group col">
+                  <label className="form-label mb-1" htmlFor="fechaFin">
+                    Fecha Fin
+                  </label>
+                  <input
+                    value={contrato?.fechaFin}
+                    onChange={(e) => {
+                      const fechaFinValue = e.target.value;
+                      const fechaInicioValue = contrato?.fechaInicio;
+
+                      if (!fechaFinValue) {
+                        window.alert("Por favor, selecciona una fecha válida.");
+                        return;
+                      }
+
+                      if (
+                        fechaInicioValue &&
+                        fechaFinValue <= fechaInicioValue
+                      ) {
+                        window.alert(
+                          "La fecha final debe ser mayor que la fecha de inicio."
+                        );
+                      } else {
+                        setContrato({
+                          ...contrato,
+                          fechaFin: e.target.value,
+                        });
+                      }
+                    }}
+                    // required
+
+                    type="date"
+                    id="fechaFin"
+                    name="fechaFin"
+                    className="form-control"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <div
-            hidden={contrato?.fechaFin == ""}
-            className="mb-3  col-12 col-md"
-          >
+          )}
+          <div className="mb-3  col-12 col-md">
             <h6 className=" bg-primary bg-opacity-10 border-bottom p-2 rounded-1">
               Pagos
             </h6>

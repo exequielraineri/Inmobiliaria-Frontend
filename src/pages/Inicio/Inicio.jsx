@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { getData } from "../../service/apiService";
 import { Login } from "../Login/Login";
+import BasicBars from "../../components/MuiChart/BasicBars";
+import BasicPie from "../../components/MuiChart/BasicPie";
 
 export const Inicio = () => {
   const { usuario } = useContext(UsuarioContexto);
@@ -71,6 +73,10 @@ export const Inicio = () => {
         })}
       </section>
       <hr />
+      <div className="d-flex gap-3 justify-content-between align-items-center">
+        <BasicBars />
+        <BasicPie />
+      </div>
     </div>
   );
 };

@@ -130,7 +130,7 @@ export const Agentes = () => {
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="container">
-                  <div className="row gap-3">
+                  <div className="d-flex flex-wrap justify-content-between px-2 gap-3">
                     <p className="border-bottom col-12 mb-0 fw-bold">
                       Datos del Agente
                     </p>
@@ -230,6 +230,7 @@ export const Agentes = () => {
                         className="form-control"
                       />
                     </div>
+
                     <div className="col-12 col-md-5">
                       <label className="form-label mb-1" htmlFor="telefono">
                         Telefono
@@ -249,7 +250,50 @@ export const Agentes = () => {
                         className="form-control"
                       />
                     </div>
-
+                    <div className="col-12 col-md-5">
+                      <label className="form-label mb-1" htmlFor="dni">
+                        Comision Venta(%)
+                      </label>
+                      <input
+                        value={usuario?.comisionVenta}
+                        onChange={(e) =>
+                          setUsuario({
+                            ...usuario,
+                            comisionVenta: e.target.value,
+                          })
+                        }
+                        required
+                        min={0}
+                        max={100}
+                        step={0.1}
+                        type="number"
+                        name="comisionVenta"
+                        id="comisionVenta"
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="col-12 col-md-5">
+                      <label className="form-label mb-1" htmlFor="dni">
+                        Comision Alquiler (%)
+                      </label>
+                      <input
+                        value={usuario?.comisionAlquiler}
+                        onChange={(e) =>
+                          setUsuario({
+                            ...usuario,
+                            comisionAlquiler: e.target.value,
+                          })
+                        }
+                        required
+                        min={0}
+                        max={100}
+                        step={0.1}
+                        type="number"
+                        name="comisionAlquiler"
+                        id="comisionAlquiler"
+                        className="form-control"
+                      />
+                    </div>
                     <div className="col-12 col-md-5">
                       <label className="form-label mb-1" htmlFor="provincia">
                         Provincia

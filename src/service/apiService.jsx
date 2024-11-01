@@ -1,4 +1,6 @@
+/* eslint-disable no-useless-catch */
 import axios from "axios";
+import { toast } from "sonner";
 
 export const API_URL = "http://localhost:8080/";
 
@@ -61,12 +63,17 @@ export const putData = async (endpoint, data) => {
  * @param {String} endpoint
  * @returns
  */
-export const deleteData = async (endpoint) => {
-  try {
-    const response = await axiosInstancia.delete(endpoint);
-    return response?.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
+export const deleteData = async (endpoint, rol) => {
+  if (rol == "ADMIN") {
+    try {
+      const response = await axiosInstancia.delete(endpoint);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  } else {
+    toast.error("No autorizado para realizar esta operación");
+    throw new Error("Rol no autorizado", { cause: "El Rol" });
   }
 };

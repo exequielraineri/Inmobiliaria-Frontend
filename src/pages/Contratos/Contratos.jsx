@@ -93,9 +93,13 @@ export const Contratos = () => {
                     <td>{contrato?.tipoContrato || "-"}</td>
                     <td>{formatearPrecio(contrato?.importe)}</td>
                     <td>
-                      {new Date(contrato?.fechaInicio).toLocaleDateString()}
+                      {contrato?.fechaInicio &&
+                        new Date(contrato?.fechaInicio).toLocaleDateString()}
                     </td>
-                    <td>{new Date(contrato?.fechaFin).toLocaleDateString()}</td>
+                    <td>
+                      {contrato?.fechaFin &&
+                        new Date(contrato?.fechaFin).toLocaleDateString()}
+                    </td>
                     <td>{contrato?.estado || "-"}</td>
                     <td>
                       <div className="d-flex gap-1">

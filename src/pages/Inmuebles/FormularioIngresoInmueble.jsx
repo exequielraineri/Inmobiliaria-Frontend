@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-key */
-import { useEffect, useState } from "react";
-import { InputText } from "../../components/InputText/InputText";
-import { API_URL, getData, postData, putData } from "../../service/apiService";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { InputText } from "../../components/InputText/InputText";
 import { Loading } from "../../components/Loading/Loading";
 import { tipo_inmuebles } from "../../data/data";
-import { toast } from "sonner";
+import { API_URL, getData, postData, putData } from "../../service/apiService";
 export const FormularioIngresoInmueble = () => {
   const [tipoInmuele, setTipoInmueble] = useState(null);
   const [venta, setventa] = useState(false);
@@ -278,7 +278,7 @@ export const FormularioIngresoInmueble = () => {
                       </div>
                       <div className="col">
                         <label className="form-label mb-1">
-                          Listado de propietarios {inmueble?.propietario?.id}
+                          Listado de propietarios
                         </label>
                         <select
                           required

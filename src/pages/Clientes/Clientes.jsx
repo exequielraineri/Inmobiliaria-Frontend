@@ -6,10 +6,11 @@ import { ModalCliente } from "../../components/ModalCliente/ModalCliente";
 import { deleteData, getData } from "../../service/apiService";
 import { Loading } from "../../components/Loading/Loading";
 import { toast } from "sonner";
+import { UsuarioContexto } from "../../Context/UsuarioContext";
 
 export const Clientes = ({ mostrarAlerta }) => {
   const [showModal, setShowModal] = useState(false);
-
+  const { usuario } = useContext(UsuarioContexto);
   const [clienteSelect, setClienteSelect] = useState(null);
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ export const Clientes = ({ mostrarAlerta }) => {
   //Eliminar cliente
   const eliminarCliente = async (id) => {
     try {
-      toast.promise(deleteData("clientes/" + id), {
+      toast.promise(deleteData("clientes/" + id, usuario?.rol), {
         loading: "Cargando...",
         success: (response) => {
           actualizarTabla();
