@@ -1,42 +1,39 @@
 import { useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { UsuarioContexto } from "../Context/UsuarioContext";
-import { Agentes } from "../pages/Agentes/Agentes";
-import { Clientes } from "../pages/Clientes/Clientes";
-import { Consultas } from "../pages/Consultas/Consultas";
-import { Contratos } from "../pages/Contratos/Contratos";
-import { FormContrato } from "../pages/Contratos/FormContrato";
-import { VerContrato } from "../pages/Contratos/VerContrato";
+import { AgentePage } from "../pages/Agentes/AgentePage";
+import { ClientePage } from "../pages/Clientes/ClientePage";
+import { ContratoForm } from "../pages/Contratos/ContratoForm";
+import { ContratoPage } from "../pages/Contratos/ContratoPage";
+import { ContratoView } from "../pages/Contratos/ContratoView";
 import { Inicio } from "../pages/Inicio/Inicio";
-import { FormularioIngresoInmueble } from "../pages/Inmuebles/FormularioIngresoInmueble";
-import { Inmuebles } from "../pages/Inmuebles/Inmuebles";
+import { InmuebleForm } from "../pages/Inmuebles/InmuebleForm";
+import { InmueblePage } from "../pages/Inmuebles/InmueblePage";
 import { Perfil } from "../pages/Perfil/Perfil";
-import { Transacciones } from "../pages/Transacciones/Transacciones";
-import { toast } from "sonner";
-
+import { TransaccionPage } from "../pages/Transacciones/TransaccionPage";
 export const RoutesComponent = () => {
   const { usuario } = useContext(UsuarioContexto);
   return (
     <Routes>
       <Route path="" element={<Inicio />} />
       <Route path="/inmuebles">
-        <Route index element={<Inmuebles />} />
-        <Route path="nuevo" element={<FormularioIngresoInmueble />} />
-        <Route path="editar/:id" element={<FormularioIngresoInmueble />} />
+        <Route index element={<InmueblePage />} />
+        <Route path="nuevo" element={<InmuebleForm />} />
+        <Route path="editar/:id" element={<InmuebleForm />} />
       </Route>
-      <Route path="/clientes" element={<Clientes />} />
+      <Route path="/clientes" element={<ClientePage />} />
       <Route path="/contratos">
-        <Route index element={<Contratos />} />
-        <Route path="nuevo" element={<FormContrato />} />
-        <Route path=":id" element={<VerContrato />} />
+        <Route index element={<ContratoPage />} />
+        <Route path="nuevo" element={<ContratoForm />} />
+        <Route path=":id" element={<ContratoView />} />
       </Route>
       <Route
         path="/agentes"
-        element={usuario?.rol == "ADMIN" ? <Agentes /> : <Navigate to="/" />}
+        element={usuario?.rol == "ADMIN" ? <AgentePage /> : <Navigate to="/" />}
       />
       {/* <Route path="/consultas" element={<Consultas />} /> */}
-      <Route path="/contratos" element={<Contratos />} />
-      <Route path="/transacciones" element={<Transacciones />} />
+      <Route path="/contratos" element={<ContratoPage />} />
+      <Route path="/transacciones" element={<TransaccionPage />} />
       <Route path="/perfil" element={<Perfil />} />
     </Routes>
   );

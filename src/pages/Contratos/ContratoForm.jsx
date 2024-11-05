@@ -1,12 +1,9 @@
-/* eslint-disable react/jsx-key */
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ModalCliente } from "../../components/ModalCliente/ModalCliente";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
-import { formatearPrecio } from "../../data/funciones";
 import { getData, postData } from "../../service/apiService";
-export const FormContrato = () => {
+export const ContratoForm = () => {
   const { usuario } = useContext(UsuarioContexto);
   const [contrato, setContrato] = useState({
     inmueble: {
@@ -22,38 +19,39 @@ export const FormContrato = () => {
     fechaFin: "",
     tipoContrato: "",
   });
-  const [inmuebles, setInmuebles] = useState();
-  const [inmueblesFiltrados, setInmueblesFiltrados] = useState();
+  const [inmuebles, setInmuebles] = useState([]);
+  const [inmueblesFiltrados, setInmueblesFiltrados] = useState([]);
   const [clientes, setClientes] = useState();
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const cargarDatos = async () => {
+  const fetchDatos = async () => {
     setLoading(true);
     try {
       const responseInmuebles = await getData("/inmuebles");
       const responseClientes = await getData("/clientes");
+
       //filtramos solo inmuebles disponibles
       let disponibles = responseInmuebles?.data?.filter(
         (inm) => inm?.estado?.toLowerCase() != "Alquilado"
       );
       setInmuebles(disponibles);
       setInmueblesFiltrados(disponibles);
+
       //filtramos todos menos los propietarios
       let resultado = responseClientes?.data?.filter(
         (cliente) => cliente?.tipoCliente?.toLowerCase() != "propietario"
       );
       setClientes(resultado);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    cargarDatos();
+    fetchDatos();
   }, []);
 
   useEffect(() => {
@@ -68,12 +66,14 @@ export const FormContrato = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    console.log(contrato);
+
     try {
       toast.promise(postData("/contratos", contrato), {
         loading: "Cargando...",
         success: (response) => {
-          navigate("/contratos");
           setContrato(null);
+          navigate("/contratos");
           return "Contrato creado exitosamente";
         },
         error: (response) => {
@@ -85,6 +85,22 @@ export const FormContrato = () => {
       console.log(error);
     }
   };
+
+  const verificarFechas = (fechaSelect) => {
+    const fechaFinValue = fechaSelect;
+    const fechaInicioValue = contrato?.fechaInicio;
+
+    if (fechaInicioValue && fechaFinValue <= fechaInicioValue) {
+      toast.warning("La fecha final debe ser mayor que la fecha de inicio.");
+    } else {
+      setContrato({
+        ...contrato,
+        fechaFin: fechaSelect,
+      });
+    }
+  };
+
+  if (loading) return <div>Cargando...</div>;
 
   return (
     <main className="container-fluid">
@@ -194,12 +210,6 @@ export const FormContrato = () => {
                     className="form-control"
                     placeholder="Ingrese un dni"
                   />
-                  <button
-                    onClick={() => setShowModal(true)}
-                    className="btn btn-primary"
-                  >
-                    <i className="fa-solid fa-plus"></i>
-                  </button>
                 </div>
               </div>
               <div className="form-group col">
@@ -226,7 +236,7 @@ export const FormContrato = () => {
                   </option>
                   {clientes?.map((cliente) => {
                     return (
-                      <option value={cliente.id}>
+                      <option key={cliente.id} value={cliente.id}>
                         {cliente.nombre +
                           " " +
                           cliente.apellido +
@@ -250,8 +260,7 @@ export const FormContrato = () => {
                     Fecha Inicio
                   </label>
                   <input
-                    // required
-
+                    required={contrato?.tipoContrato == "ALQUILER"}
                     type="date"
                     value={contrato?.fechaInicio}
                     onChange={(e) =>
@@ -272,30 +281,9 @@ export const FormContrato = () => {
                   <input
                     value={contrato?.fechaFin}
                     onChange={(e) => {
-                      const fechaFinValue = e.target.value;
-                      const fechaInicioValue = contrato?.fechaInicio;
-
-                      if (!fechaFinValue) {
-                        window.alert("Por favor, selecciona una fecha válida.");
-                        return;
-                      }
-
-                      if (
-                        fechaInicioValue &&
-                        fechaFinValue <= fechaInicioValue
-                      ) {
-                        window.alert(
-                          "La fecha final debe ser mayor que la fecha de inicio."
-                        );
-                      } else {
-                        setContrato({
-                          ...contrato,
-                          fechaFin: e.target.value,
-                        });
-                      }
+                      verificarFechas(e.target.value);
                     }}
-                    // required
-
+                    required={contrato?.tipoContrato == "ALQUILER"}
                     type="date"
                     id="fechaFin"
                     name="fechaFin"
@@ -359,56 +347,6 @@ export const FormContrato = () => {
                   </label>
                 </div>
               </div>
-
-              <div hidden className="col border-start ps-2">
-                <p>
-                  Importe total:{" "}
-                  <strong>
-                    {new Intl.NumberFormat("en-ES", {
-                      currency: "ARS",
-                      style: "currency",
-                      currencyDisplay: "narrowSymbol",
-                    }).format(Number.parseInt(contrato?.importe || 0))}
-                  </strong>
-                  <br />
-                  Dias: <strong>{contrato?.dias}</strong>
-                  <br />
-                  Meses: <strong>{contrato?.meses}</strong>
-                </p>
-                <p>
-                  <strong>
-                    {formatearPrecio(contrato?.precioPorMes)} / mes
-                  </strong>
-                  <br />
-                  <strong>
-                    {formatearPrecio(contrato?.precioPorDia)} / dia
-                  </strong>
-                </p>
-              </div>
-              <div hidden className="mt-3 border rounded p-2 ms-3">
-                <h6 className="border-bottom pb-1">Pago por adelantado</h6>
-                <div className="col-12 col-md-3">
-                  <p>
-                    Mes a pagar: <strong>Ocutbre</strong>
-                    <br />
-                    Importe: <strong>5499</strong>
-                  </p>
-                </div>
-              </div>
-
-              <div hidden>
-                <p className="fs-5">
-                  Total:{" "}
-                  <strong>
-                    {new Intl.NumberFormat("es-ES", {
-                      currency: "ARS",
-                      style: "currency",
-                      currencyDisplay: "symbol",
-                    }).format(1234546.35)}
-                  </strong>{" "}
-                  por 39 dias
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -425,11 +363,6 @@ export const FormContrato = () => {
           </button>
         </div>
       </form>
-      <ModalCliente
-        showModal={showModal}
-        setShowModal={setShowModal}
-        actualizarTabla={cargarDatos}
-      />
     </main>
   );
 };

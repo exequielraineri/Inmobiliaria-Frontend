@@ -6,25 +6,26 @@ import { getData, putData } from "../../service/apiService";
 import { Imagen } from "../../components/Imagen/Imagen";
 import { formatearPrecio } from "../../data/funciones";
 import { toast } from "sonner";
-export const VerContrato = () => {
+export const ContratoView = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [contrato, setContrato] = useState();
   const [metodoPago, setMetodoPago] = useState();
-  const obtenerContrato = async () => {
+
+  const fetchContrato = async () => {
     setLoading(true);
     try {
       const response = await getData("/contratos/" + id);
       setContrato(response?.data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    obtenerContrato();
+    fetchContrato();
   }, []);
 
   const confirmarPago = async (pago) => {
@@ -37,7 +38,7 @@ export const VerContrato = () => {
       toast.promise(putData("pagos/confirmar/" + pagoData?.id, pagoData), {
         loading: "Cargando...",
         success: (response) => {
-          obtenerContrato();
+          fetchContrato();
           return "Pago actualizado";
         },
         error: (response) => {
@@ -51,6 +52,8 @@ export const VerContrato = () => {
       setLoading(false);
     }
   };
+
+  if (loading) return <div>Cargando...</div>;
 
   return (
     <>

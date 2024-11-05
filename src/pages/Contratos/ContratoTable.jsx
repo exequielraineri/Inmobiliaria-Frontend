@@ -1,17 +1,19 @@
-/* eslint-disable react/jsx-key */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatearPrecio } from "../../data/funciones";
-import { getData } from "../../service/apiService";
-export const Contratos = () => {
-  const [contratos, setContratos] = useState();
-  const [loading, setLoading] = useState(false);
+import { deleteData, getData } from "../../service/apiService";
+import { toast } from "sonner";
+import { UsuarioContexto } from "../../Context/UsuarioContext";
 
-  const cargarContratos = async () => {
+export const ContratoTable = () => {
+  const [contratos, setContratos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { usuario } = useContext(UsuarioContexto);
+  const fetchContratos = async () => {
     setLoading(true);
     try {
-      const response = await getData("/contratos");
-      setContratos(response.data);
+      const response = await getData("contratos");
+      setContratos(response?.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -20,51 +22,29 @@ export const Contratos = () => {
   };
 
   useEffect(() => {
-    cargarContratos();
+    fetchContratos();
   }, []);
 
+  const eliminarContrato = async (id) => {
+    if (confirm("Seguro desea eliminar un contrato?")) {
+      try {
+        const response = await deleteData("contratos/" + id, usuario?.rol);
+        if (response instanceof Error) {
+          toast.warning(response.message);
+          return new Error(response.message);
+        }
+
+        toast.success("Contrato eliminado");
+        fetchContratos();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  if (loading) return <div>Cargando...</div>;
   return (
-    <main>
-      <div className="bloque">
-        <h3 className="border-bottom pb-1 text-primary">Contratos</h3>
-        {/* <h6 className="text-secondary">Criterios de busqueda</h6>
-        <form action="/" method="get" className="d-flex flex-wrap gap-3 col-12">
-          <div className="col-12 col-md-2 col-sm-4">
-            <label className="form-label mb-1" htmlFor="estado">
-              Estado
-            </label>
-            <select className="form-select" id="estado" name="estado">
-              <option value="Todos">Todos</option>
-              <option value="Pendientes">Pendientes</option>
-              <option value="Contestadas">Contestadas</option>
-            </select>
-          </div>
-          <div className="col-12 col-md-2 col-sm-4">
-            <label className="form-label mb-1" htmlFor="estado">
-              Mes
-            </label>
-            <input
-              type="month"
-              className="form-control"
-              value={fecha}
-              onChange={(e) => {
-                setFecha(e.target.value);
-              }}
-            />
-          </div>
-          <div className="col d-flex align-items-end">
-            <button className="btn btn-outline-secondary" type="submit">
-              Filtrar
-            </button>
-          </div>
-        </form> */}
-      </div>
-      <div className="d-flex justify-content-end gap-2">
-        {/* <button className="btn btn-sm btn-danger my-3">Imprimir</button> */}
-        <Link to={"/contratos/nuevo"} className="btn btn-sm btn-primary my-3">
-          Nuevo
-        </Link>
-      </div>
+    <div>
       <div className="bloque">
         <h3>Listado </h3>
         <p className="pb-0 mb-0 fw-ligth">Encontrados {contratos?.length}</p>
@@ -85,7 +65,7 @@ export const Contratos = () => {
             <tbody>
               {contratos?.map((contrato, index) => {
                 return (
-                  <tr>
+                  <tr key={contrato.id}>
                     <td>{++index}</td>
                     <td>
                       {new Date(contrato?.fechaContrato).toLocaleDateString()}
@@ -108,7 +88,10 @@ export const Contratos = () => {
                             <i className="fa-solid fa-eye"></i>
                           </button>
                         </Link>
-                        <button className="btn btn-outline-danger btn-sm">
+                        <button
+                          onClick={() => eliminarContrato(contrato?.id)}
+                          className="btn btn-outline-danger btn-sm"
+                        >
                           <i className="fa-solid fa-trash"></i>
                         </button>
                       </div>
@@ -120,6 +103,6 @@ export const Contratos = () => {
           </table>
         </div>
       </div>
-    </main>
+    </div>
   );
 };

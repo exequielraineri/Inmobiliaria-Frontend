@@ -7,7 +7,7 @@ import { InputText } from "../../components/InputText/InputText";
 import { Loading } from "../../components/Loading/Loading";
 import { tipo_inmuebles } from "../../data/data";
 import { API_URL, getData, postData, putData } from "../../service/apiService";
-export const FormularioIngresoInmueble = () => {
+export const InmuebleForm = () => {
   const [tipoInmuele, setTipoInmueble] = useState(null);
   const [venta, setventa] = useState(false);
   const [imagenes, setImagenes] = useState([]);

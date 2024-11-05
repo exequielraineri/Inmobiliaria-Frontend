@@ -2,7 +2,6 @@
 import { useContext, useState } from "react";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { postData } from "../../service/apiService";
-import { Loading } from "../../components/Loading/Loading";
 import { toast } from "sonner";
 export const Login = () => {
   const [dataForm, setDataForm] = useState({
