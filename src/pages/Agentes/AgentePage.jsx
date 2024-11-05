@@ -14,7 +14,7 @@ export const AgentePage = () => {
         <h3 className="border-bottom pb-1 text-primary">Agentes</h3>
         <h6 className="text-secondary">Criterios de busqueda</h6>
         <form action="/" method="get" className="d-flex flex-wrap gap-3 col-12">
-          <div className="col-12 col-md col-sm-4">
+          <div className="col-auto">
             <label className="form-label mb-1" htmlFor="ubicacion">
               Provincia
             </label>
@@ -25,7 +25,7 @@ export const AgentePage = () => {
               })}
             </select>
           </div>
-          <div className="col-12 col-md col-sm-4">
+          <div className="col-auto">
             <label className="form-label mb-1" htmlFor="estado">
               Estado
             </label>

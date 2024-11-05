@@ -10,7 +10,7 @@ export const InmueblePage = () => {
         <h3 className="border-bottom pb-1 text-primary">Inmuebles</h3>
         <h6 className="text-secondary">Criterios de busqueda</h6>
         <form action="/" method="get" className="d-flex flex-wrap gap-3 col-12">
-          <div className="col-12 col-md col-sm-4">
+          <div className="col-auto">
             <label className="form-label mb-1" htmlFor="tipo">
               Tipo Inmumeble
             </label>
@@ -22,7 +22,7 @@ export const InmueblePage = () => {
               <option value="Oficina">Oficina</option>
             </select>
           </div>
-          <div className="col-12 col-md col-sm-4">
+          <div className="col-auto">
             <label className="form-label mb-1" htmlFor="ubicacion">
               Ubicación
             </label>
@@ -34,7 +34,7 @@ export const InmueblePage = () => {
               placeholder="Ubicacion"
             />
           </div>
-          <div className="col-12 col-md col-sm-4">
+          <div className="col-auto">
             <label className="form-label mb-1" htmlFor="estado">
               Estado
             </label>

@@ -9,34 +9,19 @@ export const Inicio = () => {
   const { usuario } = useContext(UsuarioContexto);
   const [inmuebles, setInmuebles] = useState([]);
 
-  const [paneles, setPaneles] = useState([
-    {
-      titulo: "Contratos",
-      valor: 0,
-    },
-    {
-      titulo: "Inmuebles",
-      valor: 0,
-    },
-    {
-      titulo: "Transacciones",
-      valor: 0,
-    },
-    {
-      titulo: "Alquileres",
-      valor: 0,
-    },
-  ]);
+  const [paneles, setPaneles] = useState([]);
 
-  const cargarInmuebles = async () => {
-    const response = await getData("/inmuebles");
-    console.log(response);
-
-    setInmuebles(response.data);
+  const fetchInmuebles = async () => {
+    try {
+      const response = await getData("/inmuebles");
+      setInmuebles(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    cargarInmuebles();
+    fetchInmuebles();
   }, []);
 
   useEffect(() => {
@@ -51,12 +36,24 @@ export const Inicio = () => {
           valor: inmuebles?.length,
         },
         {
-          titulo: "Transacciones",
-          valor: usuario?.transacciones?.length,
+          titulo: "Alquilados",
+          valor: 0,
         },
         {
-          titulo: "Consultas",
-          valor: usuario?.consultas?.length,
+          titulo: "Vendidos",
+          valor: 0,
+        },
+        {
+          titulo: "Clientes",
+          valor: 0,
+        },
+        {
+          titulo: "Ingreso",
+          valor: 0,
+        },
+        {
+          titulo: "Egreso",
+          valor: 0,
         },
       ]);
     }
@@ -67,13 +64,13 @@ export const Inicio = () => {
       <h3 className="border-start ps-2 border-primary text-primary">
         Panel Principal
       </h3>
-      <section className="mx-5 d-flex flex-row gap-4 justify-content-between overflow-y-hidden overflow-x-scroll py-3">
+      <section className="d-flex flex-row gap-4 overflow-x-scroll py-3">
         {paneles?.map((panel) => {
           return <Panel titulo={panel?.titulo} valor={panel?.valor} />;
         })}
       </section>
       <hr />
-      <div className="d-flex gap-3 justify-content-between align-items-center">
+      <div className="d-flex justify-content-between align-items-center">
         <BasicBars />
         <BasicPie />
       </div>

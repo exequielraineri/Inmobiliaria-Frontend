@@ -2,9 +2,8 @@
 import { useContext, useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "react-bootstrap";
 import { toast } from "sonner";
-import { postData } from "../../service/apiService";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
-import { AgenteForm } from "../Agentes/AgenteForm";
+import { postData } from "../../service/apiService";
 
 export const TransaccionForm = ({
   isOpenTransaccionForm,
@@ -14,6 +13,7 @@ export const TransaccionForm = ({
 }) => {
   const { usuario } = useContext(UsuarioContexto);
   const [transaccion, setTransaccion] = useState();
+
   const onSubmit = (e) => {
     e.preventDefault();
     const newTransaccion = {
@@ -110,6 +110,32 @@ export const TransaccionForm = ({
                 });
               }}
             />
+          </div>
+          <div>
+            <label className="form-label mb-1" htmlFor="operacion">
+              Operación
+            </label>
+            <select
+              className="form-select"
+              value={transaccion?.tipoOperacion}
+              onChange={(e) => {
+                setTransaccion({
+                  ...transaccion,
+                  tipoOperacion: e.target.value,
+                });
+              }}
+              required
+            >
+              <option value="" disabled>
+                Seleccione...
+              </option>
+              <option value="ALQUILER">ALQUILER</option>
+              <option value="VENTA">VENTA</option>
+              <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+              <option value="EXPENSAS">EXPENSAS</option>
+              <option value="IMPUESTOS">IMPUESTOS</option>
+              <option value="OTROS">OTROS</option>
+            </select>
           </div>
         </ModalBody>
         <ModalFooter className="d-flex justify-content-end">

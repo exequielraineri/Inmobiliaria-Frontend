@@ -11,6 +11,8 @@ import { InmuebleForm } from "../pages/Inmuebles/InmuebleForm";
 import { InmueblePage } from "../pages/Inmuebles/InmueblePage";
 import { Perfil } from "../pages/Perfil/Perfil";
 import { TransaccionPage } from "../pages/Transacciones/TransaccionPage";
+import { ConsultaPage } from "../pages/Consultas/ConsultaPage";
+import { ReportePage } from "../pages/Reportes/ReportePage";
 export const RoutesComponent = () => {
   const { usuario } = useContext(UsuarioContexto);
   return (
@@ -31,10 +33,10 @@ export const RoutesComponent = () => {
         path="/agentes"
         element={usuario?.rol == "ADMIN" ? <AgentePage /> : <Navigate to="/" />}
       />
-      {/* <Route path="/consultas" element={<Consultas />} /> */}
-      <Route path="/contratos" element={<ContratoPage />} />
+      <Route path="/consultas" element={<ConsultaPage />} />
       <Route path="/transacciones" element={<TransaccionPage />} />
       <Route path="/perfil" element={<Perfil />} />
+      <Route path="/reportes" element={<ReportePage />} />
     </Routes>
   );
 };

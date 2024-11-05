@@ -1,26 +1,17 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useState } from "react";
-import "./layoutPrincipal.css";
 import { Link, useLocation } from "react-router-dom";
-import { RoutesComponent } from "../Routes/RoutesComponent";
 import { UsuarioContexto } from "../Context/UsuarioContext";
+import { RoutesComponent } from "../Routes/RoutesComponent";
+import "./layoutPrincipal.css";
 export const LayoutPrincipal = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { usuario } = useContext(UsuarioContexto);
-  const [alerta, setAlerta] = useState({ mensaje: "", tipo: "" });
 
   return (
     <div className="wrapper">
-      <aside id="sidebar" className={isOpen && "expand"}>
-        <div className="d-flex">
-          <button
-            className="toggle-btn"
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <i className="fa-solid fa-bars text-white"></i>
-          </button>
+      <aside id="sidebar" className={"expand"}>
+        <div className="d-flex justify-content-center px-4 py-3">
           <div className="sidebar-logo">
             <Link to={"/"} className="fw-bold text-white">
               Real State | NOA
@@ -28,7 +19,7 @@ export const LayoutPrincipal = () => {
           </div>
         </div>
         <hr className="text-white" />
-        <ul className="sidebar-nav">
+        <ul className="sidebar-nav p-0">
           <li
             className={`sidebar-item ${
               location.pathname === "/" ? "bg-primary" : ""
@@ -44,34 +35,10 @@ export const LayoutPrincipal = () => {
               location.pathname.endsWith("inmuebles") ? "bg-primary" : ""
             }`}
           >
-            <Link
-              title="Inmuebles"
-              to={"/inmuebles"}
-              className="sidebar-link"
-              // " has-dropdown"
-              // data-bs-toggle="collapse"
-              // href="#menuInmueble"
-              // role="button"
-              // aria-expanded="false"
-              // aria-controls="menuInmueble"
-            >
+            <Link title="Inmuebles" to={"/inmuebles"} className="sidebar-link">
               <i className="fa-solid fa-tag"></i>
               <span>Inmuebles</span>
             </Link>
-            {/* <div className="collapse sidebar-dropdown" id="menuInmueble">
-              <ul className="nav flex-column ms-4">
-                <li className="">
-                  <Link to={"/inmuebles"} className="sidebar-link" href="#">
-                    Publicados
-                  </Link>
-                </li>
-                <li className="">
-                  <Link to={"/inmuebles"} className="sidebar-link" href="#">
-                    Pendientes
-                  </Link>
-                </li>
-              </ul>
-            </div> */}
           </li>
           <li
             className={`sidebar-item ${
@@ -82,49 +49,13 @@ export const LayoutPrincipal = () => {
               title="Clientes"
               to={"/clientes"}
               className="sidebar-link has-dropdown"
-              // data-bs-toggle="collapse"
-              // href="#menuClientes"
-              // role="button"
-              // aria-expanded="false"
-              // aria-controls="menuClientes"
             >
               <i className="fa-solid fa-users"></i>
               <span>Clientes</span>
             </Link>
-            {/* <div className="collapse sidebar-dropdown" id="menuClientes">
-              <ul className="nav flex-column ms-4">
-                <li className="">
-                  <Link
-                    to={"/clientes/inquilinos"}
-                    className="sidebar-link"
-                    href="#"
-                  >
-                    Inquilinos
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    to={"/clientes/compradores"}
-                    className="sidebar-link"
-                    href="#"
-                  >
-                    Compradores
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    to={"/clientes/propietarios"}
-                    className="sidebar-link"
-                    href="#"
-                  >
-                    Propietarios
-                  </Link>
-                </li>
-              </ul>
-            </div> */}
           </li>
 
-          {/* <li
+          <li
             className={`sidebar-item ${
               location.pathname.endsWith("consultas") ? "bg-primary" : ""
             }`}
@@ -133,7 +64,7 @@ export const LayoutPrincipal = () => {
               <i className="fa-solid fa-archive"></i>
               <span>Consultas</span>
             </Link>
-          </li> */}
+          </li>
           <li
             className={`sidebar-item ${
               location.pathname.endsWith("contratos") ? "bg-primary" : ""
@@ -158,6 +89,16 @@ export const LayoutPrincipal = () => {
             >
               <i className="fa-solid fa-history"></i>
               <span>Transacciones</span>
+            </Link>
+          </li>
+          <li
+            className={`sidebar-item ${
+              location.pathname.endsWith("reportes") ? "bg-primary" : ""
+            }`}
+          >
+            <Link title="reportes" to={"/reportes"} className="sidebar-link">
+              <i className="fa-solid fa-filter"></i>
+              <span>Reportes</span>
             </Link>
           </li>
           {usuario?.rol == "ADMIN" && (
@@ -186,8 +127,8 @@ export const LayoutPrincipal = () => {
           </a>
         </div>
       </aside>
-      <div className="main bg-ligth">
-        <nav className=" border-bottom navbar navbar-expand px-4 py-3">
+      <div className="main bg-light">
+        <nav className="border-bottom navbar navbar-expand px-4 py-3">
           <div className=" w-100 d-flex justify-content-between align-items-center">
             <h3 className="fw-light">
               Bienvenido <span className="fw-bold"> {usuario?.nombre}</span>
