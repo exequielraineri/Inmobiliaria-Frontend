@@ -1,6 +1,29 @@
 import { BarChart } from "@mui/x-charts/BarChart";
+import { useEffect, useState } from "react";
 
-export default function BasicBars() {
+export default function BasicBars({ inmuebles }) {
+  const [propiedades, setPropiedades] = useState({
+    casas: 0,
+    departamento: 0,
+    campos: 0,
+    oficinas: 0,
+  });
+
+  const cargarDatos = () => {
+    setPropiedades({
+      ...propiedades,
+      campos: inmuebles?.campo,
+      casas: inmuebles?.casas,
+      departamento: inmuebles?.departamentos,
+      oficinas: inmuebles?.oficinas,
+    });
+  };
+
+  useEffect(() => {
+    if (inmuebles) {
+      cargarDatos();
+    }
+  }, [inmuebles]);
   return (
     <BarChart
       xAxis={[
@@ -13,8 +36,12 @@ export default function BasicBars() {
       series={[
         {
           label: "Propiedades",
-          data: [4, 1, 2, 3],
-          backgroundColor: ["#4caf50", "#2196f3", "#ff5722", "#ffc107"], // Colores para cada barra
+          data: [
+            propiedades?.casas,
+            propiedades?.departamento,
+            propiedades?.campos,
+            propiedades?.oficinas,
+          ],
         },
       ]}
       width={500}

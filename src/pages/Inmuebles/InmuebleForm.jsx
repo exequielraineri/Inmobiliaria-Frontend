@@ -19,6 +19,8 @@ export const InmuebleForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log(inmueble);
+
       let response;
       if (inmueble?.id != null) {
         response = putData("inmuebles/" + inmueble.id, inmueble);
@@ -50,13 +52,15 @@ export const InmuebleForm = () => {
               {
                 loading: "Subiendo imagenes...",
                 success: (response) => {
+                  navigate("/inmuebles");
                   return "Subida completada";
                 },
                 error: "Error al subir imagenes",
               }
             );
+          } else {
+            navigate("/inmuebles");
           }
-          navigate("/inmuebles");
           return "Accion exitosa";
         },
         error: (response) => {
@@ -82,7 +86,7 @@ export const InmuebleForm = () => {
 
   const fetchPropietarios = async () => {
     try {
-      const response = await getData("clientes?tipoCliente=Propietario");
+      const response = await getData("clientes?tipoCliente=PROPIETARIO");
       setPropietarios(response?.data);
     } catch (error) {
       console.error(error);

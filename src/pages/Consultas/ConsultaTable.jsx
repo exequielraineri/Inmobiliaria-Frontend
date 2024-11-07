@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { deleteData, getData } from "../../service/apiService";
+import { toast } from "sonner";
+import { UsuarioContexto } from "../../Context/UsuarioContext";
 
 export const ConsultaTable = ({
   isOpenConsultaForm,
@@ -9,6 +12,37 @@ export const ConsultaTable = ({
   setConsultaSelect,
 }) => {
   const [consultas, setConsultas] = useState([]);
+  const { usuario } = useContext(UsuarioContexto);
+  const fetchConsultas = async () => {
+    try {
+      const response = await getData("consultas");
+      setConsultas(response?.data);
+      // console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const eliminarConsulta = async (id) => {
+    try {
+      if (confirm("Seguro desea eliminar la consulta?")) {
+        const response = await deleteData("consultas/" + id, usuario?.rol);
+        if (response instanceof Error) {
+          toast.warning(response?.message);
+          return new Error(response?.message);
+        }
+
+        toast.success("consulta eliminad1");
+        setActualizarTabla(!actualizarTabla);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchConsultas();
+  }, [actualizarTabla]);
   return (
     <div className="bloque mt-4">
       <h3>Listado </h3>
@@ -55,7 +89,12 @@ export const ConsultaTable = ({
                       >
                         <i className="fa-solid fa-search"></i>
                       </button>
-                      <button className="btn btn-outline-danger btn-sm">
+                      <button
+                        onClick={() => {
+                          eliminarConsulta(consulta?.id);
+                        }}
+                        className="btn btn-outline-danger btn-sm"
+                      >
                         <i className="fa-solid fa-trash"></i>
                       </button>
                     </div>

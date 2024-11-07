@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatearPrecio } from "../../data/funciones";
@@ -5,14 +6,29 @@ import { deleteData, getData } from "../../service/apiService";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 
-export const ContratoTable = () => {
+export const ContratoTable = ({ filtro, setFiltro }) => {
   const [contratos, setContratos] = useState([]);
   const [loading, setLoading] = useState(false);
   const { usuario } = useContext(UsuarioContexto);
   const fetchContratos = async () => {
     setLoading(true);
     try {
-      const response = await getData("contratos");
+      let parametros = "";
+
+      if (filtro?.estado) {
+        parametros += `&estado=${filtro.estado}`;
+      }
+      if (filtro?.fechaDesde) {
+        parametros += `&fechaDesde=${filtro.fechaDesde.replaceAll("-", "/")}`;
+      }
+      if (filtro?.fechaHasta) {
+        parametros += `&fechaHasta=${filtro.fechaHasta.replaceAll("-", "/")}`;
+      }
+      if (filtro?.activo) {
+        parametros += `&activo=${filtro.activo}`;
+      }
+
+      const response = await getData("contratos?" + parametros);
       setContratos(response?.data);
     } catch (error) {
       console.log(error);
@@ -23,7 +39,7 @@ export const ContratoTable = () => {
 
   useEffect(() => {
     fetchContratos();
-  }, []);
+  }, [filtro]);
 
   const eliminarContrato = async (id) => {
     if (confirm("Seguro desea eliminar un contrato?")) {
@@ -54,6 +70,7 @@ export const ContratoTable = () => {
               <tr>
                 <th className="col-auto">#</th>
                 <th className="col">Fecha Contrato</th>
+                <th className="col">Agente</th>
                 <th className="col">Tipo Contrato</th>
                 <th className="col">Monto</th>
                 <th className="col">Fecha Inicio</th>
@@ -70,6 +87,7 @@ export const ContratoTable = () => {
                     <td>
                       {new Date(contrato?.fechaContrato).toLocaleDateString()}
                     </td>
+                    <td>{contrato?.agente?.nombre || "-"}</td>
                     <td>{contrato?.tipoContrato || "-"}</td>
                     <td>{formatearPrecio(contrato?.importe)}</td>
                     <td>

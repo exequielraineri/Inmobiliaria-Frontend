@@ -9,6 +9,11 @@ export const ClientePage = () => {
   const [isOpenClienteForm, setIsOpenClienteForm] = useState(false);
   const [clienteSelect, setClienteSelect] = useState(null);
   const [actualizarTabla, setActualizarTabla] = useState(false);
+  const [filtro, setFiltro] = useState({
+    tipoCliente: null,
+    provincia: null,
+    estado: null,
+  });
   return (
     <main>
       <div className="bloque">
@@ -19,8 +24,19 @@ export const ClientePage = () => {
             <label className="form-label mb-1" htmlFor="tipo">
               Tipo Cliente
             </label>
-            <select className="form-select" name="tipo">
-              <option value="Todos">Todos</option>
+            <select
+              value={filtro?.tipoCliente}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  tipoCliente: e.target.value,
+                });
+              }}
+              defaultValue={""}
+              className="form-select"
+              name="tipo"
+            >
+              <option value="">Todos</option>
               {tipo_clientes?.map((tipo) => {
                 return <option value={tipo}>{tipo}</option>;
               })}
@@ -30,8 +46,20 @@ export const ClientePage = () => {
             <label className="form-label mb-1" htmlFor="ubicacion">
               Provincia
             </label>
-            <select className="form-select" name="provincia" id="provincia">
-              <option value="Todos">Todos</option>
+            <select
+              value={filtro?.provincia}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  provincia: e.target.value,
+                });
+              }}
+              defaultValue={""}
+              className="form-select"
+              name="provincia"
+              id="provincia"
+            >
+              <option value="">Todos</option>
               {provincias.map((prov) => {
                 return <option value={prov}>{prov}</option>;
               })}
@@ -41,10 +69,20 @@ export const ClientePage = () => {
             <label className="form-label mb-1" htmlFor="estado">
               Estado
             </label>
-            <select className="form-select" name="estado">
-              <option value="Todos">Todos</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
+            <select
+              value={filtro?.estado}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  estado: e.target.value,
+                });
+              }}
+              defaultValue={"true"}
+              className="form-select"
+              name="estado"
+            >
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
             </select>
           </div>
 
@@ -75,6 +113,8 @@ export const ClientePage = () => {
         actualizarTabla={actualizarTabla}
         setActualizarTabla={setActualizarTabla}
         setIsOpenClienteForm={setIsOpenClienteForm}
+        filtro={filtro}
+        setFiltro={setFiltro}
       />
       <ClienteForm
         actualizarTabla={actualizarTabla}

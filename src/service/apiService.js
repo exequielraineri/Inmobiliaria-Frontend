@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-catch */
 import axios from "axios";
+import { toast } from "sonner";
 
 export const API_URL = import.meta.env.VITE_URL_API;
 const axiosInstancia = axios.create({
@@ -69,7 +70,11 @@ export const deleteData = async (endpoint, rol) => {
       const response = await axiosInstancia.delete(endpoint);
       return response?.data;
     } catch (error) {
-      console.error("Error al eliminar los datos:", error);
+      console.error(
+        "Error al eliminar los datos:",
+        error?.response?.data?.data
+      );
+      toast.warning(error?.response?.data?.data);
       throw new Error("Error al intentar eliminar los datos.");
     }
   } else {

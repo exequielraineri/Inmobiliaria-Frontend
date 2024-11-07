@@ -1,14 +1,29 @@
 import { PieChart } from "@mui/x-charts/PieChart";
+import { useEffect, useState } from "react";
 
-export default function BasicPie() {
+export default function BasicPie({ contratos }) {
+  const [estadisticas, setEstadisticas] = useState({
+    alquiler: 0,
+    venta: 0,
+  });
+
+  useEffect(() => {
+    if (contratos) {
+      setEstadisticas({
+        alquiler: contratos?.contratosAlquiler,
+        venta: contratos?.contratosVentas,
+      });
+    }
+  }, [contratos]);
+
   return (
     <PieChart
       series={[
         {
           arcLabel: "formattedValue",
           data: [
-            { id: 0, value: 130, label: "Alquiler" },
-            { id: 1, value: 200, label: "Ventas" },
+            { id: 0, value: estadisticas?.alquiler, label: "Alquiler" },
+            { id: 1, value: estadisticas?.venta, label: "Ventas" },
           ],
         },
       ]}

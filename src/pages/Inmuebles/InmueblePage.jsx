@@ -2,8 +2,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { InmuebleTable } from "./InmuebleTable";
+import { tipo_inmuebles } from "../../data/data";
 
 export const InmueblePage = () => {
+  const [filtro, setFiltro] = useState({
+    tipoInmueble: null,
+    direccion: null,
+    estado: null,
+  });
   return (
     <main>
       <div className="bloque">
@@ -14,12 +20,23 @@ export const InmueblePage = () => {
             <label className="form-label mb-1" htmlFor="tipo">
               Tipo Inmumeble
             </label>
-            <select className="form-select" id="tipo" name="tipo">
-              <option value="Todos">Todos</option>
-              <option value="Casa">Casa</option>
-              <option value="Departamento">Departamento</option>
-              <option value="Campo">Campo</option>
-              <option value="Oficina">Oficina</option>
+            <select
+              defaultValue={""}
+              className="form-select"
+              id="tipo"
+              name="tipo"
+              value={filtro?.tipoInmueble}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  tipoInmueble: e.target.value,
+                });
+              }}
+            >
+              <option value="">Todos</option>
+              {tipo_inmuebles.map((inmueble) => {
+                return <option value={inmueble}>{inmueble}</option>;
+              })}
             </select>
           </div>
           <div className="col-auto">
@@ -27,6 +44,13 @@ export const InmueblePage = () => {
               Ubicación
             </label>
             <input
+              value={filtro?.direccion}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  direccion: e.target.value,
+                });
+              }}
               className="form-control"
               type="text"
               id="ubicacion"
@@ -38,12 +62,23 @@ export const InmueblePage = () => {
             <label className="form-label mb-1" htmlFor="estado">
               Estado
             </label>
-            <select className="form-select" id="estado" name="estado">
-              <option value="Todos">Todos</option>
-              <option value="Alquilado">Alquilado</option>
-              <option value="Vendido">Vendido</option>
-              <option value="Mantenimiento">Mantenimiento</option>
-              <option value="Cancelado">Cancelado</option>
+            <select
+              value={filtro?.estado}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  estado: e.target.value,
+                });
+              }}
+              className="form-select"
+              id="estado"
+              name="estado"
+            >
+              <option value="">Todos</option>
+              <option value="DISPONIBLE">DISPONIBLE</option>
+              <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+              <option value="ALQUILADO">ALQUILADO</option>
+              <option value="VENDIDO">VENDIDO</option>
             </select>
           </div>
 
@@ -68,7 +103,7 @@ export const InmueblePage = () => {
       </div>
 
       <div className="bloque mt-2">
-        <InmuebleTable />
+        <InmuebleTable filtro={filtro} setFiltro={setFiltro} />
       </div>
     </main>
   );

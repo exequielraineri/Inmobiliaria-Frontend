@@ -4,6 +4,8 @@ import { formatearPrecio } from "../../data/funciones";
 
 export const Perfil = () => {
   const { usuario } = useContext(UsuarioContexto);
+  console.log(usuario);
+
   return (
     <div>
       <h3>Perfil</h3>

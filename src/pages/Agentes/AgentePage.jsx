@@ -8,6 +8,10 @@ export const AgentePage = () => {
   const [isOpenAgenteForm, setIsOpenAgenteForm] = useState(false);
   const [actualizadoTabla, setActualizarTabla] = useState(false);
   const [usuarioSelect, setUsuarioSelect] = useState();
+  const [filtro, setFiltro] = useState({
+    provincia: null,
+    activo: null,
+  });
   return (
     <main>
       <div className="bloque">
@@ -18,21 +22,42 @@ export const AgentePage = () => {
             <label className="form-label mb-1" htmlFor="ubicacion">
               Provincia
             </label>
-            <select className="form-select" name="provincia" id="provincia">
-              <option value="Todos">Todos</option>
-              {provincias.map((prov) => {
-                return <option value={prov}>{prov}</option>;
-              })}
-            </select>
+            <input
+              placeholder="Ingrese provincia"
+              className="form-control"
+              type="text"
+              value={filtro?.provincia}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  provincia: e.target.value,
+                });
+              }}
+            />
           </div>
           <div className="col-auto">
-            <label className="form-label mb-1" htmlFor="estado">
+            <label
+              defaultValue={""}
+              className="form-label mb-1"
+              htmlFor="estado"
+            >
               Estado
             </label>
-            <select className="form-select" id="estado" name="estado">
-              <option value="Todos">Todos</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
+            <select
+              value={filtro?.activo}
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  activo: e.target.value,
+                });
+              }}
+              className="form-select"
+              id="estado"
+              name="estado"
+              defaultValue="true"
+            >
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
             </select>
           </div>
 
@@ -64,6 +89,8 @@ export const AgentePage = () => {
         setIsOpenAgenteForm={setIsOpenAgenteForm}
         setUsuarioSelect={setUsuarioSelect}
         usuarioSelect={usuarioSelect}
+        filtro={filtro}
+        setFiltro={setFiltro}
       />
 
       <AgenteForm

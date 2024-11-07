@@ -56,6 +56,7 @@ export const LayoutPrincipal = () => {
           </li>
 
           <li
+            hidden
             className={`sidebar-item ${
               location.pathname.endsWith("consultas") ? "bg-primary" : ""
             }`}
@@ -79,16 +80,12 @@ export const LayoutPrincipal = () => {
 
           <li
             className={`sidebar-item ${
-              location.pathname.endsWith("transacciones") ? "bg-primary" : ""
+              location.pathname.endsWith("caja") ? "bg-primary" : ""
             }`}
           >
-            <Link
-              title="Transacciones"
-              to={"/transacciones"}
-              className="sidebar-link"
-            >
+            <Link title="Caja" to={"/caja"} className="sidebar-link">
               <i className="fa-solid fa-history"></i>
-              <span>Transacciones</span>
+              <span>Caja</span>
             </Link>
           </li>
           <li

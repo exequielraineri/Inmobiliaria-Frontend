@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState } from "react";
 import { Imagen } from "../../components/Imagen/Imagen";
 import { Link } from "react-router-dom";
@@ -5,14 +6,26 @@ import { deleteData, getData } from "../../service/apiService";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 
-export const InmuebleTable = () => {
+export const InmuebleTable = ({ filtro, setFiltro }) => {
   const [inmuebles, setInmuebles] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const { usuario } = useContext(UsuarioContexto);
   const fetchInmuebles = async () => {
     setLoading(true);
     try {
-      const response = await getData("inmuebles");
+      let parametros = "";
+      if (filtro?.direccion) {
+        parametros += `&direccion=${filtro.direccion}`;
+      }
+      if (filtro?.tipoInmueble) {
+        parametros += `&tipoInmueble=${filtro.tipoInmueble}`;
+      }
+      if (filtro?.estado) {
+        parametros += `&estado=${filtro.estado}`;
+      }
+
+      const response = await getData("inmuebles?" + parametros);
       setInmuebles(response?.data);
     } catch (error) {
       console.log(error);
@@ -41,7 +54,7 @@ export const InmuebleTable = () => {
 
   useEffect(() => {
     fetchInmuebles();
-  }, []);
+  }, [filtro]);
 
   return (
     <div>
@@ -109,10 +122,11 @@ export const InmuebleTable = () => {
                   <td>{inmueble?.estado || "-"}</td>
                   <td>
                     <div className="d-flex gap-1">
-                      <Link className="btn btn-sm btn-outline-info">
+                      <Link hidden className="btn btn-sm btn-outline-info">
                         <i className="fa-solid fa-search"></i>
                       </Link>
                       <button
+                        disabled={inmueble.estado == "ALQUILADO"}
                         onClick={() => {
                           eliminarInmueble(inmueble.id);
                         }}

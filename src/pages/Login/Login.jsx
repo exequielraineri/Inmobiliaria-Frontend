@@ -3,14 +3,15 @@ import { useContext, useState } from "react";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { postData } from "../../service/apiService";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [dataForm, setDataForm] = useState({
     correo: "",
     password: "",
   });
   const { usuario, setUsuario } = useContext(UsuarioContexto);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
+  const navigate = useNavigate();
 
   const onSubmitLogin = async (e) => {
     e.preventDefault();
@@ -19,7 +20,9 @@ export const Login = () => {
         loading: "Cargando...",
         success: ({ data }) => {
           setUsuario(data);
+          console.log(data);
           sessionStorage.setItem("usuario", JSON.stringify(data));
+          navigate(0);
           return "Bienvenido, " + data?.nombre + " " + data?.apellido;
         },
         error: (response) => {
@@ -27,8 +30,6 @@ export const Login = () => {
           return "Error al iniciar sesion";
         },
       });
-      // const response = await postData("/autenticacion/login", dataForm);
-      // setUsuario(response?.data);
     } catch (error) {
       console.log(error);
       if (error?.status == 404) {

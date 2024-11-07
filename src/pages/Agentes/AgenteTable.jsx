@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
 import { useContext, useEffect, useState } from "react";
 import { deleteData, getData } from "../../service/apiService";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
+import { formatearPrecio } from "../../data/funciones";
 
 export const AgenteTable = ({
   actualizarTabla,
@@ -10,6 +12,8 @@ export const AgenteTable = ({
   setUsuarioSelect,
   isOpenAgenteForm,
   setIsOpenAgenteForm,
+  filtro,
+  setFiltro,
 }) => {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,7 +21,20 @@ export const AgenteTable = ({
   const fetchUsuarios = async () => {
     setLoading(true);
     try {
-      const response = await getData("usuarios");
+      let parametros = "";
+      if (filtro?.activo) {
+        parametros += `&activo=${filtro?.activo}`;
+      }
+      if (filtro?.provincia) {
+        parametros += `&provincia=${filtro?.provincia}`;
+      }
+      if (filtro?.fechaDesde) {
+        parametros += `&fechaDesde=${filtro?.fechaDesde.replaceAll("-", "/")}`;
+      }
+      if (filtro?.fechaHasta) {
+        parametros += `&fechaHasta=${filtro?.fechaHasta.replaceAll("-", "/")}`;
+      }
+      const response = await getData("usuarios?" + parametros);
       setUsuarios(response?.data);
     } catch (error) {
       console.error(error);
@@ -45,7 +62,7 @@ export const AgenteTable = ({
 
   useEffect(() => {
     fetchUsuarios();
-  }, [actualizarTabla]);
+  }, [actualizarTabla, filtro]);
 
   if (loading) return <div>Cargando...</div>;
 
@@ -59,8 +76,10 @@ export const AgenteTable = ({
             <thead>
               <tr>
                 <th className="col-auto">#</th>
-                <th className="col">Nombre</th>
-                <th className="col">Apellido</th>
+                <th className="col">Agente</th>
+                <th className="col">Comision Venta</th>
+                <th className="col">Comision Alquiler</th>
+                <th className="col">Ganancias</th>
                 <th className="col">Email</th>
                 <th className="col">Provincia</th>
                 <th className="col">Rol</th>
@@ -73,8 +92,12 @@ export const AgenteTable = ({
                 return (
                   <tr key={user.id}>
                     <td>{++index}</td>
-                    <td>{user?.nombre || "-"}</td>
-                    <td>{user?.apellido || "-"}</td>
+                    <td>
+                      {(user?.nombre || "-") + " " + (user?.apellido || "-")}
+                    </td>
+                    <td>{user?.comisionVenta || "-"}</td>
+                    <td>{user?.comisionAlquiler || "-"}</td>
+                    <td>{formatearPrecio(user?.totalGanancias)}</td>
                     <td>{user?.correo || "-"}</td>
                     <td>{user?.provincia || "-"}</td>
                     <td>{user?.rol || "-"}</td>

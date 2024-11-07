@@ -1,16 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-key */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getData, putData } from "../../service/apiService";
 import { Imagen } from "../../components/Imagen/Imagen";
 import { formatearPrecio } from "../../data/funciones";
 import { toast } from "sonner";
+import { useCol } from "react-bootstrap/esm/Col";
+import { UsuarioContexto } from "../../Context/UsuarioContext";
 export const ContratoView = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [contrato, setContrato] = useState();
   const [metodoPago, setMetodoPago] = useState();
+  const { usuario, setUsuario, actualizarUsuario } =
+    useContext(UsuarioContexto);
 
   const fetchContrato = async () => {
     setLoading(true);
@@ -33,12 +37,16 @@ export const ContratoView = () => {
       ...pago,
       metodoPago: metodoPago,
     };
+    console.log(pagoData);
+
     setLoading(true);
     try {
       toast.promise(putData("pagos/confirmar/" + pagoData?.id, pagoData), {
         loading: "Cargando...",
         success: (response) => {
           fetchContrato();
+          actualizarUsuario();
+          setMetodoPago(null);
           return "Pago actualizado";
         },
         error: (response) => {
@@ -64,27 +72,32 @@ export const ContratoView = () => {
         <hr />
         <h4 className="text-capitalize">{contrato?.inmueble?.titulo}</h4>
         <p>{contrato?.inmueble?.descripcion}</p>
-        <p>
+        <p className="text-capitalize m-0 p-0">
           Fecha Contrato:{" "}
           <strong>
-            {new Date(contrato?.fechaContrato).toLocaleDateString(undefined, {
-              dateStyle: "full",
+            {new Date(contrato?.fechaContrato).toLocaleString(undefined, {
+              dateStyle: "long",
             })}
           </strong>
           <br />
-          Periodo de contrato:{" "}
-          <strong>
-            {new Date(contrato?.fechaInicio).toLocaleDateString(undefined, {
-              dateStyle: "long",
-            })}
-          </strong>
-          {" - "}
-          <strong>
-            {new Date(contrato?.fechaFin).toLocaleDateString(undefined, {
-              dateStyle: "long",
-            })}
-          </strong>
         </p>
+        {contrato?.tipoContrato == "ALQUILER" && (
+          <p>
+            Periodo de contrato:{" "}
+            <strong>
+              {new Date(contrato?.fechaInicio).toLocaleDateString(undefined, {
+                dateStyle: "long",
+              })}
+            </strong>
+            {" - "}
+            <strong>
+              {new Date(contrato?.fechaFin).toLocaleDateString(undefined, {
+                dateStyle: "long",
+              })}
+            </strong>
+          </p>
+        )}
+
         <section className="d-flex flex-wrap gap-3 ">
           {contrato?.inmueble?.imagenes?.map((imagen) => {
             return <Imagen imagen={imagen} width={"200"} />;
@@ -126,10 +139,16 @@ export const ContratoView = () => {
                   }
                 >
                   <td>{++index}</td>
-                  <td>{new Date(pago.fechaPago).toLocaleDateString()}</td>
+                  <td>
+                    {new Date(pago.fechaPago).toLocaleString(undefined, {
+                      dateStyle: "short",
+                    })}
+                  </td>
                   <td>
                     {pago.fechaRegistro
-                      ? new Date(pago.fechaRegistro).toLocaleDateString()
+                      ? new Date(pago.fechaRegistro).toLocaleString(undefined, {
+                          dateStyle: "short",
+                        })
                       : "-"}
                   </td>
                   <td>{formatearPrecio(pago.monto)}</td>
@@ -169,34 +188,36 @@ export const ContratoView = () => {
                     )}
                   </td>
                   <td>
-                    <div className="d-flex gap-2">
-                      {pagoAnterior == null && pago.estado == "PENDIENTE" ? (
-                        <button
-                          onClick={() => {
-                            if (confirm("Seguro desea confirmar el pago?")) {
-                              confirmarPago(pago);
-                            }
-                          }}
-                          className="btn btn-sm btn-outline-success"
-                        >
-                          <i className="fa-solid fa-check"></i>
-                        </button>
-                      ) : pago.estado == "PENDIENTE" &&
-                        pagoAnterior?.estado == "PAGADO" ? (
-                        <button
-                          onClick={() => {
-                            if (confirm("Seguro desea confirmar el pago?")) {
-                              confirmarPago(pago);
-                            }
-                          }}
-                          className="btn btn-sm btn-outline-success"
-                        >
-                          <i className="fa-solid fa-check"></i>
-                        </button>
-                      ) : (
-                        ""
-                      )}
-                    </div>
+                    {metodoPago && (
+                      <div className="d-flex gap-2">
+                        {pagoAnterior == null && pago.estado == "PENDIENTE" ? (
+                          <button
+                            onClick={() => {
+                              if (confirm("Seguro desea confirmar el pago?")) {
+                                confirmarPago(pago);
+                              }
+                            }}
+                            className="btn btn-sm btn-outline-success"
+                          >
+                            <i className="fa-solid fa-check"></i>
+                          </button>
+                        ) : pago.estado == "PENDIENTE" &&
+                          pagoAnterior?.estado == "PAGADO" ? (
+                          <button
+                            onClick={() => {
+                              if (confirm("Seguro desea confirmar el pago?")) {
+                                confirmarPago(pago);
+                              }
+                            }}
+                            className="btn btn-sm btn-outline-success"
+                          >
+                            <i className="fa-solid fa-check"></i>
+                          </button>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    )}
                   </td>
                 </tr>
               );

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState } from "react";
 import { deleteData, getData } from "../../service/apiService";
 import { toast } from "sonner";
@@ -9,6 +10,8 @@ export const ClienteTable = ({
   clienteSelect,
   setClienteSelect,
   setIsOpenClienteForm,
+  filtro,
+  setFiltro,
 }) => {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -16,7 +19,19 @@ export const ClienteTable = ({
   const fetchClientes = async () => {
     setLoading(true);
     try {
-      const response = await getData("clientes");
+      let parametros = "";
+
+      if (filtro?.tipoCliente) {
+        parametros += `&tipoCliente=${filtro?.tipoCliente}`;
+      }
+      if (filtro?.provincia) {
+        parametros += `&provincia=${filtro?.provincia}`;
+      }
+      if (filtro?.estado) {
+        parametros += `&estado=${filtro?.estado}`;
+      }
+
+      const response = await getData("clientes?" + parametros);
       setClientes(response.data);
     } catch (error) {
       console.log(error);
@@ -27,7 +42,7 @@ export const ClienteTable = ({
 
   useEffect(() => {
     fetchClientes();
-  }, [actualizarTabla]);
+  }, [actualizarTabla, filtro]);
 
   //Eliminar cliente
   const eliminarCliente = async (id) => {

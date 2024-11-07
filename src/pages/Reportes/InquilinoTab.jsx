@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { getData } from "../../service/apiService";
 import { formatearPrecio } from "../../data/funciones";
-import { useFetcher } from "react-router-dom";
+import { getData } from "../../service/apiService";
 
 export const InquilinoTab = () => {
   const [pagos, setPagos] = useState([]);
@@ -9,7 +8,17 @@ export const InquilinoTab = () => {
   const [filtro, setFiltro] = useState();
   const fetchInquilinos = async () => {
     try {
-      const response = await getData("pagos");
+      let parametros = "";
+      if (filtro?.estado) {
+        parametros += `&estado=${filtro.estado}`;
+      }
+      if (filtro?.fechaDesde) {
+        parametros += `&fechaDesde=${filtro.fechaDesde.replaceAll("-", "/")}`;
+      }
+      if (filtro?.fechaHasta) {
+        parametros += `&fechaHasta=${filtro.fechaHasta.replaceAll("-", "/")}`;
+      }
+      const response = await getData("pagos?" + parametros);
       setPagos(response?.data);
     } catch (error) {
       console.error(error);
@@ -18,16 +27,7 @@ export const InquilinoTab = () => {
 
   useEffect(() => {
     fetchInquilinos();
-  }, []);
-
-  useEffect(() => {
-    if (filtro?.estado) {
-      let resultado = pagos?.filter((pago) => pago?.estado == filtro?.estado);
-      setPagosFiltrados(resultado);
-    } else {
-      setPagosFiltrados(pagos);
-    }
-  }, [pagos, filtro]);
+  }, [filtro]);
 
   return (
     <div>
@@ -35,6 +35,8 @@ export const InquilinoTab = () => {
         <div className="col-auto">
           <label className="form-label mb-1">Estado del Pago</label>
           <select
+            value={filtro?.estado}
+            defaultValue={""}
             onChange={(e) => {
               setFiltro({
                 ...filtro,
@@ -49,15 +51,30 @@ export const InquilinoTab = () => {
           </select>
         </div>
         <div className="col-auto">
-          <label className="form-label mb-1">Feche de Pago</label>
+          <label className="form-label mb-1">Feche Desde</label>
           <input
+            value={filtro?.fechaDesde}
             onChange={(e) => {
               setFiltro({
                 ...filtro,
-                mes: e.target.value,
+                fechaDesde: e.target.value,
               });
             }}
-            type="month"
+            type="date"
+            className="form-control"
+          />
+        </div>
+        <div className="col-auto">
+          <label className="form-label mb-1">Feche Hasta</label>
+          <input
+            value={filtro?.fechaHasta}
+            onChange={(e) => {
+              setFiltro({
+                ...filtro,
+                fechaHasta: e.target.value,
+              });
+            }}
+            type="date"
             className="form-control"
           />
         </div>
@@ -77,7 +94,7 @@ export const InquilinoTab = () => {
             </tr>
           </thead>
           <tbody>
-            {pagosFiltrados?.map((pago, index) => {
+            {pagos?.map((pago, index) => {
               return (
                 <tr key={index}>
                   <td>{++index}</td>
@@ -95,16 +112,9 @@ export const InquilinoTab = () => {
                   <td>{formatearPrecio(pago?.monto)}</td>
                   <td>
                     {pago.fechaRegistro &&
-                      new Date(pago.fechaRegistro).toLocaleString("es-ES", {
-                        timeZone: "UTC",
-                      })}
+                      new Date(pago.fechaRegistro).toLocaleString()}
                   </td>
-                  <td>
-                    {new Date(pago.fechaPago).toLocaleString("es-ES", {
-                      timeZone: "UTC",
-                      dateStyle: "short",
-                    })}
-                  </td>
+                  <td>{new Date(pago.fechaPago).toLocaleString()}</td>
                 </tr>
               );
             })}

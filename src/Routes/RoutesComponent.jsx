@@ -34,7 +34,7 @@ export const RoutesComponent = () => {
         element={usuario?.rol == "ADMIN" ? <AgentePage /> : <Navigate to="/" />}
       />
       <Route path="/consultas" element={<ConsultaPage />} />
-      <Route path="/transacciones" element={<TransaccionPage />} />
+      <Route path="/caja" element={<TransaccionPage />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/reportes" element={<ReportePage />} />
     </Routes>
