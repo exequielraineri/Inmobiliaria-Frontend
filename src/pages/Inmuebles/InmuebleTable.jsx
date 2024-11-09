@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { deleteData, getData } from "../../service/apiService";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
+import { formatearPrecio } from "../../data/funciones";
 
 export const InmuebleTable = ({ filtro, setFiltro }) => {
   const [inmuebles, setInmuebles] = useState([]);
@@ -71,7 +72,8 @@ export const InmuebleTable = ({ filtro, setFiltro }) => {
               <th className="col">Tipo de Inmueble</th>
               <th className="col">Dirección</th>
               <th className="col">Prec. Venta</th>
-              <th className="col">Prec. Alquiler</th>
+              <th className="col">Prec. Alquiler Dia</th>
+              <th className="col">Prec. Alquiler Mes</th>
               <th className="col">Estado</th>
               <th className="col-auto"></th>
             </tr>
@@ -108,20 +110,17 @@ export const InmuebleTable = ({ filtro, setFiltro }) => {
                   <td>{inmueble.direccion || "-"}</td>
                   <td>
                     {inmueble.venta
-                      ? new Intl.NumberFormat("en-ES", {
-                          currency: "ARS",
-                          style: "currency",
-                          currencyDisplay: "narrowSymbol",
-                        }).format(inmueble.precioVenta)
+                      ? formatearPrecio(inmueble.precioVenta)
                       : "-"}
                   </td>
                   <td>
                     {inmueble.venta == false
-                      ? new Intl.NumberFormat("en-ES", {
-                          currency: "ARS",
-                          style: "currency",
-                          currencyDisplay: "narrowSymbol",
-                        }).format(inmueble.precioAlquiler)
+                      ? formatearPrecio(inmueble.precioAlquilerDia)
+                      : "-"}
+                  </td>
+                  <td>
+                    {inmueble.venta == false
+                      ? formatearPrecio(inmueble.precioAlquilerMes)
                       : "-"}
                   </td>
                   <td>{inmueble?.estado || "-"}</td>

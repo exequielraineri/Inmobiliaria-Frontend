@@ -30,7 +30,7 @@ export const ContratoForm = () => {
   const fetchDatos = async () => {
     setLoading(true);
     try {
-      const responseInmuebles = await getData("/inmuebles?estado=DISPONIBLES");
+      const responseInmuebles = await getData("/inmuebles?estado=DISPONIBLE");
       const responseClientes = await getData("/clientes");
 
       setInmuebles(responseInmuebles?.data);

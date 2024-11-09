@@ -122,7 +122,7 @@ export const InmuebleForm = () => {
 
   const fetchPropietarios = async () => {
     try {
-      const response = await getData("clientes?tipoCliente=PROPIETARIO");
+      const response = await getData("clientes");
       setPropietarios(response?.data);
     } catch (error) {
       console.error(error);
@@ -402,7 +402,6 @@ export const InmuebleForm = () => {
                       <div className="d-flex flex-row gap-2 align-items-end">
                         <Imagen imagen={imageID[index]} width={100} />
                         <input
-                          required={index == 0}
                           accept="image/*"
                           type="file"
                           onChange={(e) => {
