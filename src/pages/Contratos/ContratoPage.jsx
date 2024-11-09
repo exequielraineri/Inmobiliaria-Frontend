@@ -16,11 +16,7 @@ export const ContratoPage = () => {
       <div className="bloque">
         <h3 className="border-bottom pb-1 text-primary">Contratos</h3>
         <h6 className="text-secondary">Criterios de busqueda</h6>
-        <form
-          action="/"
-          method="get"
-          className="d-flex flex-wrap gap-3 col-auto"
-        >
+        <div className="d-flex flex-wrap gap-3 col-auto">
           <div className="col-auto col-md-2 col-sm-4">
             <label className="form-label mb-1" htmlFor="estado">
               Estado del Contrato
@@ -97,12 +93,7 @@ export const ContratoPage = () => {
               className="form-control"
             />
           </div>
-          <div className="col d-flex align-items-end">
-            <button className="btn btn-outline-secondary" type="submit">
-              Filtrar
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
       <div className="d-flex justify-content-end gap-2">
         <Link to={"/contratos/nuevo"} className="btn btn-sm btn-primary my-3">

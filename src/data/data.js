@@ -8,6 +8,12 @@ export const estados_contrato = [
   "FINALIZADO",
   "CANCELADO",
 ];
+export const estados_inmueble = [
+  "MANTENIMIENTO",
+  "DISPONIBLE",
+  "ALQUILADO",
+  "VENDIDO",
+];
 export const tipos_operacion = [
   "ALQUILER",
   "VENTA",

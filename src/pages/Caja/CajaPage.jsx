@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-key */
 import { useEffect, useState } from "react";
-import { TransaccionTable } from "./TransaccionTable";
-import { TransaccionForm } from "./TransaccionForm";
 import { tipos_operacion } from "../../data/data";
+import { CajaForm } from "./CajaForm";
+import { CajaTable } from "./CajaTable";
 
-export const TransaccionPage = () => {
+export const CajaPage = () => {
   const [isOpenTransaccionForm, setIsOpenTransaccionForm] = useState(false);
   const [actualizarTabla, setActualizarTabla] = useState(false);
   const [filtro, setFiltro] = useState({
@@ -13,9 +13,7 @@ export const TransaccionPage = () => {
     fechaDesde: null,
     fechaHasta: null,
   });
-  useEffect(() => {
-    console.log(filtro);
-  }, [filtro]);
+
   return (
     <main>
       <div className="bloque">
@@ -118,14 +116,14 @@ export const TransaccionPage = () => {
         </div>
       </div>
 
-      <TransaccionForm
+      <CajaForm
         actualizarTabla={actualizarTabla}
         setActualizarTabla={setActualizarTabla}
         isOpenTransaccionForm={isOpenTransaccionForm}
         setIsOpenTransaccionForm={setIsOpenTransaccionForm}
       />
 
-      <TransaccionTable
+      <CajaTable
         actualizarTabla={actualizarTabla}
         setActualizarTabla={setActualizarTabla}
         filtro={filtro}

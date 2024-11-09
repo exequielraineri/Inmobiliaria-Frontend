@@ -5,12 +5,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { InputText } from "../../components/InputText/InputText";
 import { Loading } from "../../components/Loading/Loading";
-import { tipo_inmuebles } from "../../data/data";
+import { estados_inmueble, tipo_inmuebles } from "../../data/data";
 import { API_URL, getData, postData, putData } from "../../service/apiService";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import { Imagen } from "../../components/Imagen/Imagen";
 export const InmuebleForm = () => {
   const [propietarios, setPropietarios] = useState();
   const [inmueble, setInmueble] = useState();
-  const [imagenes, setImagenes] = useState([]);
+  const [imagenes, setImagenes] = useState([null, null, null, null]);
+  const [imageID, setImageID] = useState([null, null, null, null]);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,8 +29,6 @@ export const InmuebleForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log(inmueble);
-
       let response;
       if (inmueble?.id != null) {
         response = putData("inmuebles/" + inmueble.id, inmueble);
@@ -31,36 +39,34 @@ export const InmuebleForm = () => {
       toast.promise(response, {
         loading: "Cargando...",
         success: (response) => {
-          if (imagenes.length > 0) {
-            const formData = new FormData();
+          const formData = new FormData();
 
-            for (let i = 0; i < imagenes.length; i++) {
-              const element = imagenes[i];
-              formData.append("imagenes", element);
-            }
-
-            toast.promise(
-              axios.post(
-                API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                }
-              ),
-              {
-                loading: "Subiendo imagenes...",
-                success: (response) => {
-                  navigate("/inmuebles");
-                  return "Subida completada";
-                },
-                error: "Error al subir imagenes",
-              }
-            );
-          } else {
-            navigate("/inmuebles");
+          for (let i = 0; i < imagenes.length; i++) {
+            const element = imagenes[i];
+            formData.append("imagenes", element);
+            console.log(element);
           }
+
+          toast.promise(
+            axios.post(
+              API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            ),
+            {
+              loading: "Subiendo imagenes...",
+              success: (response) => {
+                navigate("/inmuebles");
+                return "Subida completada";
+              },
+              error: "Error al subir imagenes",
+            }
+          );
+
           return "Accion exitosa";
         },
         error: (response) => {
@@ -75,9 +81,39 @@ export const InmuebleForm = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(imagenes);
+    console.log(imageID);
+
+    // console.log(inmueble?.imagenes);
+  }, [imagenes]);
   const fetchInmueble = async () => {
     try {
       const response = await getData("inmuebles/" + id);
+
+      // eslint-disable-next-line no-unused-vars
+
+      response?.data?.imagenes?.map(async (imagen, index) => {
+        console.log(imagen?.id);
+        imageID[index] = imagen;
+
+        const response = await axios.get(
+          API_URL + `inmuebles/imagen/${imagen?.id}`,
+          {
+            responseType: "blob",
+          }
+        );
+
+        const file = new File([response?.data], `${imagen?.nombre}`, {
+          type: response?.data?.type,
+        });
+
+        imagenes[index] = file;
+
+        console.log(imagenes);
+      });
+
+      console.log(imagenes);
       setInmueble(response?.data);
     } catch (error) {
       console.error(error);
@@ -129,25 +165,44 @@ export const InmuebleForm = () => {
         <div className="shadow rounded-3 bg-white p-3">
           <form onSubmit={onSubmit} encType="multipart/form-data">
             <input type="text" name="id" hidden />
-            <div className="mb-0 pb-0">
-              <h5 className="fw-ligth text-primary">
-                Nuevo Inmueble | {inmueble?.tipoInmueble}
-              </h5>
-              <p>Debe completar los campos para que el ingreso sea exitoso</p>
+            <div className="d-flex gap-2 justify-content-between">
+              <div className="mb-0 pb-0 col">
+                <h5 className="fw-ligth text-primary">
+                  Nuevo Inmueble | {inmueble?.tipoInmueble}
+                </h5>
+                <p>Debe completar los campos para que el ingreso sea exitoso</p>
+              </div>
+              <div className="col-3">
+                <FormControl fullWidth variant="filled">
+                  <InputLabel shrink>Estado del inmueble</InputLabel>
+                  <Select
+                    value={inmueble?.estado}
+                    onChange={(e) => {
+                      setInmueble({ ...inmueble, estado: e.target.value });
+                    }}
+                    fullWidth
+                    displayEmpty
+                  >
+                    <MenuItem disabled>Seleccione...</MenuItem>
+                    {estados_inmueble.map((estado) => {
+                      return <MenuItem value={estado}>{estado}</MenuItem>;
+                    })}
+                  </Select>
+                </FormControl>
+              </div>
             </div>
             <div className="d-flex gap-3 justify-content-between flex-wrap">
-              <div className="col-12 col-md-8">
+              <div className="col-12 col-md">
                 <p className="col-12 border-bottom mb-3 fw-bold">
                   Datos Principales
                 </p>
-                <section
-                  className="d-flex gap-3 justify-content-start flex-wrap"
-                  style={{ gridTemplateColumns: "repeat(2, 1fr)" }}
-                >
+                <section className="d-flex flex-wrap justify-content-start gap-3">
                   <InputText
+                    className={"col-12 col-md-5"}
+                    helperText={"Ingrese un titulo"}
                     label={"Titulo"}
                     value={inmueble?.titulo}
-                    onChanche={(e) =>
+                    onChange={(e) =>
                       setInmueble({ ...inmueble, titulo: e.target.value })
                     }
                     required={true}
@@ -155,9 +210,11 @@ export const InmuebleForm = () => {
                     placeholder={"Ingrese un titulo"}
                   />
                   <InputText
+                    className={"col-12 col-md-5"}
+                    helperText={"Ingrese una dirección"}
                     label={"Dirección"}
                     value={inmueble?.direccion}
-                    onChanche={(e) =>
+                    onChange={(e) =>
                       setInmueble({
                         ...inmueble,
                         direccion: e.target.value,
@@ -167,42 +224,7 @@ export const InmuebleForm = () => {
                     type="text"
                     placeholder={"Ingrese una dirección"}
                   />
-                  <InputText
-                    label={"Precio Alquiler (Por dia)"}
-                    value={inmueble?.precioAlquiler}
-                    onChanche={(e) =>
-                      setInmueble({
-                        ...inmueble,
-                        precioAlquiler: e.target.value,
-                      })
-                    }
-                    required={inmueble?.venta == false}
-                    type="number"
-                    placeholder={"Ingrese un precio"}
-                  />
-
-                  <div className="col-12" style={{ gridColumn: "span 2" }}>
-                    <label className="form-label" htmlFor="descripcion">
-                      Descripción
-                    </label>
-                    <textarea
-                      value={inmueble?.descripcion}
-                      onChange={(e) =>
-                        setInmueble({
-                          ...inmueble,
-                          descripcion: e.target.value,
-                        })
-                      }
-                      required
-                      placeholder="Ingrese una breve descripción"
-                      name="descripcion"
-                      id="descripcion"
-                      className="form-control"
-                      rows="3"
-                      minLength={100}
-                    ></textarea>
-                  </div>
-                  <div>
+                  <div className="col-12">
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -225,7 +247,10 @@ export const InmuebleForm = () => {
                       </label>
                     </div>
                     {inmueble?.venta && (
-                      <input
+                      <InputText
+                        className={"col-12 col-md-5"}
+                        helperText={"Ingrese un precio de venta"}
+                        label={"Precio Venta"}
                         value={inmueble?.precioVenta}
                         onChange={(e) =>
                           setInmueble({
@@ -233,30 +258,77 @@ export const InmuebleForm = () => {
                             precioVenta: e.target.value,
                           })
                         }
-                        className="form-control"
+                        required={inmueble?.venta}
                         type="number"
+                        placeholder={"Ingrese un precio de venta"}
                         min={1}
-                        required={inmueble.venta}
-                        id="precioVenta"
-                        name="precioVenta"
-                        placeholder="Ingrese un precio"
                       />
                     )}
+                  </div>
+                  {!inmueble?.venta && (
+                    <>
+                      <InputText
+                        className={"col-12 col-md-5"}
+                        helperText={"Ingrese un precio por dia"}
+                        label={"Precio Alquiler (Por dia)"}
+                        value={inmueble?.precioAlquilerDia}
+                        onChange={(e) =>
+                          setInmueble({
+                            ...inmueble,
+                            precioAlquilerDia: e.target.value,
+                          })
+                        }
+                        min={1}
+                        required={inmueble?.venta == false}
+                        type="number"
+                        placeholder={"Ingrese un precio"}
+                      />
+                      <InputText
+                        className={"col-12 col-md-5"}
+                        helperText={"Ingrese un precio por mes"}
+                        label={"Precio Alquiler (Por mes)"}
+                        value={inmueble?.precioAlquilerMes}
+                        onChange={(e) =>
+                          setInmueble({
+                            ...inmueble,
+                            precioAlquilerMes: e.target.value,
+                          })
+                        }
+                        min={1}
+                        required={inmueble?.venta == false}
+                        type="number"
+                        placeholder={"Ingrese un precio por mes"}
+                      />
+                    </>
+                  )}
+                  <div className="col-12" style={{ gridColumn: "span 2" }}>
+                    <InputText
+                      fullWidth={true}
+                      value={inmueble?.descripcion}
+                      onChange={(e) =>
+                        setInmueble({
+                          ...inmueble,
+                          descripcion: e.target.value,
+                        })
+                      }
+                      required={true}
+                      multiline={true}
+                      rows={3}
+                      label={"Descripción"}
+                      helperText={"Ingrese una descripción"}
+                    />
                   </div>
                 </section>
 
                 <p className="border-bottom mb-3 mt-3 fw-bold">Propietario </p>
                 <section className="d-flex justify-content-between flex-wrap gap-3">
                   <div className="col">
-                    <label className="form-label mb-1">Nombre</label>
-                    <input
+                    {/* <InputText
                       required
-                      disabled
                       type="text"
-                      name="nombre"
-                      id="nombre"
-                      className="form-control"
-                    />
+                      label={"Propietario"}
+                      fullWidth={true}
+                    /> */}
                   </div>
                   <div className="col">
                     <label className="form-label mb-1">
@@ -292,36 +364,138 @@ export const InmuebleForm = () => {
                   </div>
                 </section>
                 <p className="border-bottom mb-3 mt-3 fw-bold">Imágenes </p>
-                <section>
-                  <div className="col">
-                    <label htmlFor="imagenes">Máximo de 4 imágenes!</label>
-                    <input
-                      onChange={(e) => {
-                        if (e.target.files.length > 4) {
-                          alert("Solo puedes subir un máximo de 4 imagenes");
-                          e.target.value = "";
-                        } else {
-                          setImagenes(e.target.files);
-                        }
-                      }}
+                {/* {!inmueble?.id && (
+                  <>
+                    <section>
+                      <div>
+                        <label htmlFor="imagenes">Máximo de 4 imágenes!</label>
+                        <input
+                          onChange={(e) => {
+                            if (e.target.files.length > 4) {
+                              alert(
+                                "Solo puedes subir un máximo de 4 imagenes"
+                              );
+                              e.target.value = "";
+                            } else {
+                              setImagenes(e.target.files);
+                            }
+                          }}
+                          accept="image/*"
+                          className="form-control"
+                          type="file"
+                          multiple
+                          // required
+                          // min={1}
+                          name="imagenes"
+                          id="imagenes"
+                        />
+                      </div>
+                    </section>
+                  </>
+                )} */}
+
+                <div className="gap-3 d-flex flex-column">
+                  {imagenes?.map((_, index) => {
+                    console.log("Valor del indice " + imageID[index]);
+
+                    return (
+                      <div className="d-flex flex-row gap-2 align-items-end">
+                        <Imagen imagen={imageID[index]} width={100} />
+                        <input
+                          required={index == 0}
+                          accept="image/*"
+                          type="file"
+                          onChange={(e) => {
+                            const copia = [...imagenes];
+                            copia[index] = e.target.files[0];
+                            setImagenes(copia);
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+
+                  {/* {inmueble?.id
+                    ? inmueble?.imagenes?.map((imagen, index) => {
+                        return (
+                          <div className="d-flex flex-row gap-2 align-items-end">
+                            <Imagen imagen={imagen} width={100} />
+                            <input
+                              accept="image/*"
+                              type="file"
+                              title={imagen?.id}
+                              onChange={(e) => {
+                                const copia = [...imagenes];
+                                copia[index] = e.target.files[0];
+                                setImagenes(copia);
+                              }}
+                            />
+                          </div>
+                        );
+                      })
+                    : imagenes?.map((_, index) => {
+                        return (
+                          <div className="d-flex flex-row gap-2 align-items-end">
+                            <input
+                              accept="image/*"
+                              type="file"
+                              onChange={(e) => {
+                                const copia = [...imagenes];
+                                copia[index] = e.target.files[0];
+                                setImagenes(copia);
+                              }}
+                            />
+                          </div>
+                        );
+                      })} */}
+                  {/* <input
                       accept="image/*"
-                      className="form-control"
                       type="file"
-                      multiple
-                      // required
-                      // min={1}
-                      name="imagenes"
-                      id="imagenes"
+                      onChange={(e) => {
+                        const copia = [...imagenes];
+                        copia[0] = e.target.files[0];
+                        setImagenes(copia);
+                      }}
                     />
                   </div>
-                  <div className="d-flex flex-wrap mt-2 gap-3">
-                    {/* Aquí puedes mostrar las imágenes dinámicamente */}
+                  <div className="d-flex flex-row align-items-end gap-3 border-bottom pb-2">
+                    <input
+                      accept="image/*"
+                      type="file"
+                      onChange={(e) => {
+                        const copia = [...imagenes];
+                        copia[1] = e.target.files[0];
+                        setImagenes(copia);
+                      }}
+                    />
                   </div>
-                </section>
+                  <div className="d-flex flex-row align-items-end gap-3 border-bottom pb-2">
+                    <input
+                      accept="image/*"
+                      type="file"
+                      onChange={(e) => {
+                        const copia = [...imagenes];
+                        copia[2] = e.target.files[0];
+                        setImagenes(copia);
+                      }}
+                    />
+                  </div>
+                  <div className="d-flex flex-row align-items-end gap-3 border-bottom pb-2">
+                    <input
+                      accept="image/*"
+                      type="file"
+                      onChange={(e) => {
+                        const copia = [...imagenes];
+                        copia[3] = e.target.files[0];
+                        setImagenes(copia);
+                      }}
+                    />
+                  </div> */}
+                </div>
               </div>
 
               <div className="col-12 col-md-3">
-                <section className="d-flex gap-1 flex-column">
+                <section className="d-flex gap-3 flex-column">
                   <p className="border-bottom mb-3 fw-bold">Datos Extras</p>
                   {inmueble?.tipoInmueble == "CAMPO" && (
                     <>
@@ -392,10 +566,7 @@ export const InmuebleForm = () => {
                   )}
                   {inmueble?.tipoInmueble != "CAMPO" && (
                     <div className="col">
-                      <label className="form-label" htmlFor="banios">
-                        Baños
-                      </label>
-                      <input
+                      <InputText
                         value={inmueble?.banios}
                         onChange={(e) =>
                           setInmueble({
@@ -403,20 +574,17 @@ export const InmuebleForm = () => {
                             banios: e.target.value,
                           })
                         }
-                        className="form-control form-control-sm"
+                        label={"Baños"}
                         type="number"
                         min={0}
-                        required
-                        name="banios"
-                        id="banios"
+                        helperText={"Ingrese cantidad de baños"}
+                        fullWidth={true}
+                        required={true}
                       />
                     </div>
                   )}
                   <div className="col">
-                    <label className="form-label" htmlFor="impMunicipales">
-                      Imp. Municipales
-                    </label>
-                    <input
+                    <InputText
                       value={inmueble?.impMunicipales}
                       onChange={(e) =>
                         setInmueble({
@@ -424,19 +592,16 @@ export const InmuebleForm = () => {
                           impMunicipales: e.target.value,
                         })
                       }
-                      required
-                      className="form-control form-control-sm"
+                      label={"Impuestos Municipales"}
                       type="number"
                       min={0}
-                      name="impMunicipales"
-                      id="impMunicipales"
+                      helperText={"Ingrese impuestos municipales"}
+                      fullWidth={true}
+                      required={true}
                     />
                   </div>
                   <div className="col">
-                    <label className="form-label" htmlFor="impInmobiliarios">
-                      Imp. Inmobiliarios
-                    </label>
-                    <input
+                    <InputText
                       value={inmueble?.impInmobiliarios}
                       onChange={(e) =>
                         setInmueble({
@@ -444,19 +609,16 @@ export const InmuebleForm = () => {
                           impInmobiliarios: e.target.value,
                         })
                       }
-                      required
-                      className="form-control form-control-sm"
+                      label={"Impuestos Inmobiliarios"}
                       type="number"
                       min={0}
-                      name="impInmobiliarios"
-                      id="impInmobiliarios"
+                      helperText={"Ingrese impuestos inmobiliarios"}
+                      fullWidth={true}
+                      required={true}
                     />
                   </div>
                   <div className="col">
-                    <label className="form-label" htmlFor="expensas">
-                      Expensas
-                    </label>
-                    <input
+                    <InputText
                       value={inmueble?.expensas}
                       onChange={(e) =>
                         setInmueble({
@@ -464,39 +626,33 @@ export const InmuebleForm = () => {
                           expensas: e.target.value,
                         })
                       }
-                      required
-                      className="form-control form-control-sm"
+                      label={"Expensas"}
                       type="number"
                       min={0}
-                      name="expensas"
-                      id="expensas"
+                      helperText={"Ingrese expensas"}
+                      fullWidth={true}
+                      required={true}
                     />
                   </div>
                   {inmueble?.tipoInmueble != "CAMPO" && (
                     <div className="col">
-                      <label className="form-label" htmlFor="mts2">
-                        Metros Cuadrados
-                      </label>
-                      <input
+                      <InputText
                         value={inmueble?.mts2}
                         onChange={(e) =>
                           setInmueble({ ...inmueble, mts2: e.target.value })
                         }
-                        required
-                        className="form-control form-control-sm"
+                        label={"Metros Cuadrados"}
                         type="number"
                         min={0}
-                        name="mts2"
-                        id="mts2"
+                        helperText={"Ingrese metros cuadrados"}
+                        fullWidth={true}
+                        required={true}
                       />
                     </div>
                   )}
                   {inmueble?.tipoInmueble == "CAMPO" && (
                     <div className="col">
-                      <label className="form-label" htmlFor="hectareas">
-                        Hectáreas
-                      </label>
-                      <input
+                      <InputText
                         value={inmueble?.hectareas}
                         onChange={(e) =>
                           setInmueble({
@@ -504,12 +660,12 @@ export const InmuebleForm = () => {
                             hectareas: e.target.value,
                           })
                         }
-                        required
-                        className="form-control form-control-sm"
+                        label={"Hectareas"}
                         type="number"
                         min={0}
-                        name="hectareas"
-                        id="hectareas"
+                        helperText={"Ingrese hectareas"}
+                        fullWidth={true}
+                        required={true}
                       />
                     </div>
                   )}

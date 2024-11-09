@@ -128,33 +128,6 @@ export const ClienteForm = ({
                 className="form-control"
               />
             </div>
-            <div className="col-12 col-md-5">
-              <label className="form-label mb-1" htmlFor="provincia">
-                Tipo de Cliente
-              </label>
-              <select
-                required
-                value={cliente?.tipoCliente}
-                onChange={(e) =>
-                  setCliente({
-                    ...cliente,
-                    tipoCliente: e.target?.value,
-                  })
-                }
-                className="form-select"
-              >
-                <option selected disabled value="">
-                  Seleccione
-                </option>
-                {tipo_clientes?.map((tipo) => {
-                  return (
-                    <option key={tipo} value={tipo}>
-                      {tipo}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
 
             <div className="col-12 col-md-5">
               <label className="form-label mb-1" htmlFor="provincia">

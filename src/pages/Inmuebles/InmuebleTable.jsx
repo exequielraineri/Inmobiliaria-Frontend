@@ -90,7 +90,12 @@ export const InmuebleTable = ({ filtro, setFiltro }) => {
                   <td>{++index}</td>
                   <td>
                     {inmueble.imagenes[0] && (
-                      <Imagen imagen={inmueble?.imagenes[0]} width={100} />
+                      <>
+                        <Imagen imagen={inmueble?.imagenes[0]} width={100} />
+                        <span className="ms-2">
+                          + {inmueble?.imagenes?.length - 1}
+                        </span>
+                      </>
                     )}
                   </td>
                   <td>{inmueble?.titulo || "-"}</td>

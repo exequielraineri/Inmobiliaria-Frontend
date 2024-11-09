@@ -21,9 +21,6 @@ export const ClienteTable = ({
     try {
       let parametros = "";
 
-      if (filtro?.tipoCliente) {
-        parametros += `&tipoCliente=${filtro?.tipoCliente}`;
-      }
       if (filtro?.provincia) {
         parametros += `&provincia=${filtro?.provincia}`;
       }
@@ -78,7 +75,6 @@ export const ClienteTable = ({
                 <th className="col">Apellido</th>
                 <th className="col">Telefono</th>
                 <th className="col">Provincia</th>
-                <th className="col">Tipo</th>
                 <th className="col">Fecha Registro</th>
                 <th className="col-auto"></th>
               </tr>
@@ -97,7 +93,6 @@ export const ClienteTable = ({
                     <td>{cliente?.apellido || "-"}</td>
                     <td>{cliente?.telefono || "-"}</td>
                     <td>{cliente?.provincia || "-"}</td>
-                    <td>{cliente?.tipoCliente || "-"}</td>
                     <td>
                       <span>
                         {new Date(cliente?.fechaRegistro).toLocaleDateString()}

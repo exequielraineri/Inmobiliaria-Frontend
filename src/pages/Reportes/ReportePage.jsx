@@ -13,9 +13,6 @@ export const ReportePage = () => {
       <Tab eventKey={2} title="Contratos">
         <ContratoTab />
       </Tab>
-      <Tab eventKey={3} title="Gastos">
-        <GastosTab />
-      </Tab>
     </Tabs>
   );
 };

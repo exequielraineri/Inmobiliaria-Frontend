@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { formatearPrecio } from "../../data/funciones";
 import { getData } from "../../service/apiService";
 
-export const TransaccionTable = ({
+export const CajaTable = ({
   actualizarTabla,
   setActualizarTabla,
   filtro,

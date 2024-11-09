@@ -10,9 +10,9 @@ import { Inicio } from "../pages/Inicio/Inicio";
 import { InmuebleForm } from "../pages/Inmuebles/InmuebleForm";
 import { InmueblePage } from "../pages/Inmuebles/InmueblePage";
 import { Perfil } from "../pages/Perfil/Perfil";
-import { TransaccionPage } from "../pages/Transacciones/TransaccionPage";
 import { ConsultaPage } from "../pages/Consultas/ConsultaPage";
 import { ReportePage } from "../pages/Reportes/ReportePage";
+import { CajaPage } from "../pages/Caja/CajaPage";
 export const RoutesComponent = () => {
   const { usuario } = useContext(UsuarioContexto);
   return (
@@ -34,7 +34,7 @@ export const RoutesComponent = () => {
         element={usuario?.rol == "ADMIN" ? <AgentePage /> : <Navigate to="/" />}
       />
       <Route path="/consultas" element={<ConsultaPage />} />
-      <Route path="/caja" element={<TransaccionPage />} />
+      <Route path="/caja" element={<CajaPage />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/reportes" element={<ReportePage />} />
     </Routes>

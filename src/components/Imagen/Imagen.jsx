@@ -2,7 +2,8 @@
 import { API_URL } from "../../service/apiService";
 
 export const Imagen = ({ imagen, width, height = "50" }) => {
-  const urlImage = API_URL + "inmuebles/imagen/" + imagen?.id;
+  const urlImage = API_URL + "inmuebles/imagen/" + Number.parseInt(imagen?.id);
+
   return (
     <img
       style={{
@@ -12,7 +13,7 @@ export const Imagen = ({ imagen, width, height = "50" }) => {
         objectPosition: "center",
       }}
       loading="lazy"
-      src={urlImage}
+      src={imagen?.id ? urlImage : "/default.png"}
       width={width}
       height={width / 2}
       alt={imagen?.nombre}

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { getData, postData } from "../../service/apiService";
+import { InputText } from "../../components/InputText/InputText";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 export const ContratoForm = () => {
   const { usuario } = useContext(UsuarioContexto);
   const [contrato, setContrato] = useState({
@@ -28,16 +30,10 @@ export const ContratoForm = () => {
   const fetchDatos = async () => {
     setLoading(true);
     try {
-      const responseInmuebles = await getData("/inmuebles");
+      const responseInmuebles = await getData("/inmuebles?estado=DISPONIBLES");
       const responseClientes = await getData("/clientes");
 
-      //filtramos solo inmuebles disponibles
-      let disponibles = responseInmuebles?.data?.filter(
-        (inm) => inm?.estado?.toLowerCase() != "Alquilado"
-      );
-      setInmuebles(disponibles);
-      setInmueblesFiltrados(disponibles);
-
+      setInmuebles(responseInmuebles?.data);
       //filtramos todos menos los propietarios
       let resultado = responseClientes?.data?.filter(
         (cliente) => cliente?.tipoCliente?.toLowerCase() != "propietario"
@@ -298,14 +294,10 @@ export const ContratoForm = () => {
               Pagos
             </h6>
 
-            <div className="row col-12 col-md-7">
-              <div>
-                <label className="form-label" htmlFor="frecuenciaPago">
-                  Frecuencia de Pago
-                </label>
-                <select
-                  className="form-select"
-                  defaultValue=""
+            <div className="d-flex flex-wrap gap-3">
+              <FormControl className="col" variant="filled">
+                <InputLabel shrink>Frecuencia de pago</InputLabel>
+                <Select
                   required
                   value={contrato?.frecuenciaPago}
                   onChange={(e) =>
@@ -314,39 +306,55 @@ export const ContratoForm = () => {
                       frecuenciaPago: e.target.value,
                     })
                   }
+                  defaultValue={""}
+                  displayEmpty
                 >
-                  <option value="" disabled>
-                    Seleccione...
-                  </option>
-                  <option value="UNICO_PAGO">Pago Unico</option>
-                  <option value="MENSUAL">Mensual</option>
-                </select>
-              </div>
-              <div hidden className="form-group col-auto">
-                <div hidden={contrato?.meses < 1} className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="tipoPago"
-                    id="tipoPagoMensual"
+                  <MenuItem disabled>Seleccion...</MenuItem>
+                  <MenuItem value="UNICO_PAGO">Pago Unico</MenuItem>
+                  <MenuItem value="MENSUAL">Mensual</MenuItem>
+                </Select>
+              </FormControl>
+
+              {contrato?.tipoContrato == "VENTA" && (
+                <>
+                  <InputText
+                    className={"col-auto"}
+                    label={"Entrega (%)"}
+                    required={
+                      contrato?.venta && contrato?.frecuenciaPago == "MENSUAL"
+                    }
+                    // fullWidth={true}
+                    value={contrato?.entrega}
+                    onChange={(e) => {
+                      setContrato({
+                        ...contrato,
+                        entrega: e.target.value,
+                      });
+                    }}
+                    type={"number"}
+                    min={0}
+                    helperText={"Ingrese un valor de la entrega"}
                   />
-                  <label className="form-check-label" htmlFor="tipoPagoMensual">
-                    Mensual
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="tipoPago"
-                    defaultChecked
-                    id="tipoPagoDiario"
+                  <InputText
+                    className={"col-auto"}
+                    label={"Cuotas"}
+                    required={
+                      contrato?.venta && contrato?.frecuenciaPago == "MENSUAL"
+                    }
+                    // fullWidth={true}
+                    value={contrato?.cuotas}
+                    onChange={(e) => {
+                      setContrato({
+                        ...contrato,
+                        cuotas: e.target.value,
+                      });
+                    }}
+                    type={"number"}
+                    min={1}
+                    helperText={"Ingrese cantidad de cuotas"}
                   />
-                  <label className="form-check-label" htmlFor="tipoPagoDiario">
-                    Diario
-                  </label>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </div>

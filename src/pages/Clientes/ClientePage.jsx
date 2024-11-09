@@ -19,7 +19,7 @@ export const ClientePage = () => {
       <div className="bloque">
         <h3 className="border-bottom pb-1 text-primary">Clientes</h3>
         <h6 className="text-secondary">Criterios de busqueda</h6>
-        <form action="/" className="d-flex flex-wrap gap-3 col-12">
+        <div className="d-flex flex-wrap gap-3 col-12">
           <div className="col-auto">
             <label className="form-label mb-1" htmlFor="tipo">
               Tipo Cliente
@@ -85,13 +85,7 @@ export const ClientePage = () => {
               <option value="false">Inactivo</option>
             </select>
           </div>
-
-          <div className="col d-flex align-items-end">
-            <button className="btn btn-outline-secondary" type="submit">
-              Filtrar
-            </button>
-          </div>
-        </form>
+        </div>
 
         <div className="d-flex justify-content-end">
           <button

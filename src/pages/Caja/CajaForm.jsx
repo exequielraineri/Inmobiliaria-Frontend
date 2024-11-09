@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { postData } from "../../service/apiService";
 
-export const TransaccionForm = ({
+export const CajaForm = ({
   isOpenTransaccionForm,
   setIsOpenTransaccionForm,
   actualizarTabla,
