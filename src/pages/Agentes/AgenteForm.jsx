@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
-import { provincias } from "../../data/data";
+import { PROVINCIAS } from "../../data/data";
 import { postData, putData } from "../../service/apiService";
 
 export const AgenteForm = ({
@@ -250,7 +250,7 @@ export const AgenteForm = ({
                 <option value="" disabled>
                   Seleccione...
                 </option>
-                {provincias.map((prov) => {
+                {PROVINCIAS.map((prov) => {
                   return (
                     <option key={prov} value={prov}>
                       {prov}

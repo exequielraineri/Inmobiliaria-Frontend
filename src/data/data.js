@@ -1,20 +1,20 @@
-export const tipo_clientes = ["INQUILINO", "PROPIETARIO", "COMPRADOR"];
-export const tipo_inmuebles = ["CASA", "DEPARTAMENTO", "CAMPO", "OFICINA"];
+export const TIPO_CLIENTES = ["INQUILINO", "PROPIETARIO", "COMPRADOR"];
+export const TIPO_INMUEBLES = ["CASA", "DEPARTAMENTO", "CAMPO", "OFICINA"];
 
-export const provincias = ["Santiago Del Estero", "Tucuman", "Cordoba"];
-export const estados_contrato = [
+export const PROVINCIAS = ["Santiago Del Estero", "Tucuman", "Cordoba"];
+export const ESTADOS_CONTRATO = [
   "PENDIENTE",
   "ACTIVO",
   "FINALIZADO",
   "CANCELADO",
 ];
-export const estados_inmueble = [
+export const ESTADOS_INMUEBLE = [
   "MANTENIMIENTO",
   "DISPONIBLE",
   "ALQUILADO",
   "VENDIDO",
 ];
-export const tipos_operacion = [
+export const TIPOS_OPERACION = [
   "ALQUILER",
   "VENTA",
   "MANTENIMIENTO",

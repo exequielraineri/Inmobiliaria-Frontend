@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
-import { useEffect, useState } from "react";
-import { tipos_operacion } from "../../data/data";
+import { useState } from "react";
+import { TIPOS_OPERACION } from "../../data/data";
 import { CajaForm } from "./CajaForm";
 import { CajaTable } from "./CajaTable";
 
@@ -60,7 +60,7 @@ export const CajaPage = () => {
               name="tipoOperacion"
             >
               <option value="">Todos</option>
-              {tipos_operacion.map((tipo) => {
+              {TIPOS_OPERACION.map((tipo) => {
                 return <option value={tipo}>{tipo}</option>;
               })}
             </select>
@@ -96,12 +96,6 @@ export const CajaPage = () => {
               type="date"
               className="form-control"
             />
-          </div>
-
-          <div className="col d-flex align-items-end">
-            <button className="btn btn-outline-secondary" type="submit">
-              Filtrar
-            </button>
           </div>
         </form>
         <div className="d-flex justify-content-end">

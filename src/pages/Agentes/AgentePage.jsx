@@ -1,8 +1,7 @@
 /* eslint-disable react/jsx-key */
 import { useState } from "react";
-import { provincias } from "../../data/data";
-import { AgenteTable } from "./AgenteTable";
 import { AgenteForm } from "./AgenteForm";
+import { AgenteTable } from "./AgenteTable";
 
 export const AgentePage = () => {
   const [isOpenAgenteForm, setIsOpenAgenteForm] = useState(false);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { formatearPrecio } from "../../data/funciones";
-import { getData } from "../../service/apiService";
+import { API_URL, getData } from "../../service/apiService";
+import { LinkPago } from "../../components/LinkPago/LinkPago";
 
 export const InquilinoTab = () => {
   const [pagos, setPagos] = useState([]);
@@ -87,10 +88,11 @@ export const InquilinoTab = () => {
               <th>#</th>
               <th>Inquilino</th>
               <th>Inmueble</th>
-              <th>Estado</th>
               <th>Monto</th>
               <th>Fecha Registro</th>
               <th>Fecha de Pago</th>
+              <th>Estado</th>
+              <th>Comprobante</th>
             </tr>
           </thead>
           <tbody>
@@ -108,13 +110,27 @@ export const InquilinoTab = () => {
                       " - " +
                       (pago?.contrato?.inmueble?.tipoInmueble || "-")}
                   </td>
-                  <td>{pago?.estado}</td>
+
                   <td>{formatearPrecio(pago?.monto)}</td>
                   <td>
                     {pago.fechaRegistro &&
                       new Date(pago.fechaRegistro).toLocaleString()}
                   </td>
                   <td>{new Date(pago.fechaPago).toLocaleString()}</td>
+                  <td>
+                    <span
+                      className={
+                        pago?.estado == "PENDIENTE"
+                          ? "text-bg-warning  px-2 rounded"
+                          : "text-bg-success  px-2 rounded"
+                      }
+                    >
+                      {pago?.estado}
+                    </span>
+                  </td>
+                  <td>
+                    {pago?.estado == "PAGADO" && <LinkPago id={pago?.id} />}
+                  </td>
                 </tr>
               );
             })}

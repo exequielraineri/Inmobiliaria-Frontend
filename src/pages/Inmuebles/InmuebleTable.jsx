@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
-import React, { useContext, useEffect, useState } from "react";
-import { Imagen } from "../../components/Imagen/Imagen";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { deleteData, getData } from "../../service/apiService";
 import { toast } from "sonner";
+import { Imagen } from "../../components/Imagen/Imagen";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { formatearPrecio } from "../../data/funciones";
+import { deleteData, getData } from "../../service/apiService";
 
 export const InmuebleTable = ({ filtro, setFiltro }) => {
   const [inmuebles, setInmuebles] = useState([]);
@@ -91,13 +91,12 @@ export const InmuebleTable = ({ filtro, setFiltro }) => {
                 >
                   <td>{++index}</td>
                   <td>
-                    {inmueble.imagenes[0] && (
-                      <>
-                        <Imagen imagen={inmueble?.imagenes[0]} width={100} />
-                        <span className="ms-2">
-                          + {inmueble?.imagenes?.length - 1}
-                        </span>
-                      </>
+                    <Imagen imagen={inmueble?.imagenes[0]} width={100} />
+
+                    {inmueble?.imagenes[0] && (
+                      <span className="ms-2 text-secondary">
+                        + {inmueble?.imagenes?.length - 1}
+                      </span>
                     )}
                   </td>
                   <td>{inmueble?.titulo || "-"}</td>
@@ -123,7 +122,21 @@ export const InmuebleTable = ({ filtro, setFiltro }) => {
                       ? formatearPrecio(inmueble.precioAlquilerMes)
                       : "-"}
                   </td>
-                  <td>{inmueble?.estado || "-"}</td>
+                  <td>
+                    <span
+                      className={"px-2 rounded ".concat(
+                        inmueble?.estado == "ALQUILADO"
+                          ? "text-bg-warning"
+                          : inmueble?.estado == "PRIMARY"
+                          ? "text-bg-success"
+                          : inmueble?.estado == "VENDIDO"
+                          ? "text-bg-primary"
+                          : "text-bg-success"
+                      )}
+                    >
+                      {inmueble?.estado || "-"}
+                    </span>
+                  </td>
                   <td>
                     <div className="d-flex gap-1">
                       <Link hidden className="btn btn-sm btn-outline-info">

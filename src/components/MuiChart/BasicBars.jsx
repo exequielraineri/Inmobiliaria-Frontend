@@ -25,27 +25,32 @@ export default function BasicBars({ inmuebles }) {
     }
   }, [inmuebles]);
   return (
-    <BarChart
-      xAxis={[
-        {
-          scaleType: "band",
-          data: ["CASAS", "DEPARTAMENTOS", "CAMPOS", "OFICINAS"],
-          label: "Tipos de inmuebles",
-        },
-      ]}
-      series={[
-        {
-          label: "Propiedades",
-          data: [
-            propiedades?.casas,
-            propiedades?.departamento,
-            propiedades?.campos,
-            propiedades?.oficinas,
-          ],
-        },
-      ]}
-      width={500}
-      height={300}
-    />
+    <div>
+      <h5>Inmuebles por tipo</h5>
+      <hr />
+      <BarChart
+        xAxis={[
+          {
+            scaleType: "band",
+            data: ["CASAS", "DEPARTAMENTOS", "CAMPOS", "OFICINAS"],
+            label: "Tipos de inmuebles",
+          },
+        ]}
+        series={[
+          {
+            label: "Propiedades",
+            data: [
+              propiedades?.casas,
+              propiedades?.departamento,
+              propiedades?.campos,
+              propiedades?.oficinas,
+            ],
+          },
+        ]}
+        width={500}
+        height={300}
+        barLabel={"value"}
+      />
+    </div>
   );
 }

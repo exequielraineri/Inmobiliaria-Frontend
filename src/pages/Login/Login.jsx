@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
 import { postData } from "../../service/apiService";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { Button, TextField } from "@mui/material";
 export const Login = () => {
   const [dataForm, setDataForm] = useState({
     correo: "",
@@ -54,8 +55,39 @@ export const Login = () => {
         }}
       >
         <h3 className="border-bottom">Inicio de Sesión</h3>
-        <form onSubmit={onSubmitLogin}>
-          <div>
+        <form onSubmit={onSubmitLogin} className="d-flex flex-column gap-2">
+          <TextField
+            variant="standard"
+            label="Correo"
+            fullWidth
+            type="email"
+            name="email"
+            value={dataForm?.correo}
+            onChange={(e) => {
+              setDataForm({
+                ...dataForm,
+                correo: e.target.value,
+              });
+            }}
+          />
+          <TextField
+            variant="standard"
+            label="Contraseña"
+            fullWidth
+            type="password"
+            name="password"
+            value={dataForm?.password}
+            onChange={(e) => {
+              setDataForm({
+                ...dataForm,
+                password: e.target.value,
+              });
+            }}
+          />
+          <Button type="submit" variant="contained">
+            Iniciar
+          </Button>
+          {/* <div>
             <label className="form-label mb-1" htmlFor="correo">
               Correo
             </label>
@@ -90,8 +122,8 @@ export const Login = () => {
               type="password"
               id="password"
             />
-          </div>
-          <div className="d-flex justify-content-end mt-3">
+          </div> */}
+          <div className="d-flex justify-content-end mt-3 d-none">
             <button className="btn btn-primary">Iniciar Sesión</button>
           </div>
         </form>

@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import React, { useContext, useEffect, useState } from "react";
-import { deleteData, getData } from "../../service/apiService";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
+import { deleteData, getData } from "../../service/apiService";
 
 export const ClienteTable = ({
   actualizarTabla,

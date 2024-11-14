@@ -1,23 +1,23 @@
 /* eslint-disable react/jsx-key */
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
-import { InputText } from "../../components/InputText/InputText";
-import { Loading } from "../../components/Loading/Loading";
-import { estados_inmueble, tipo_inmuebles } from "../../data/data";
-import { API_URL, getData, postData, putData } from "../../service/apiService";
 import {
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { Imagen } from "../../components/Imagen/Imagen";
+import { InputText } from "../../components/InputText/InputText";
+import { Loading } from "../../components/Loading/Loading";
+import { ESTADOS_INMUEBLE, TIPO_INMUEBLES } from "../../data/data";
+import { API_URL, getData, postData, putData } from "../../service/apiService";
 export const InmuebleForm = () => {
   const [propietarios, setPropietarios] = useState();
+  const [filtro, setFiltro] = useState();
   const [inmueble, setInmueble] = useState();
   const [imagenes, setImagenes] = useState([null, null, null, null]);
   const [imageID, setImageID] = useState([null, null, null, null]);
@@ -39,33 +39,36 @@ export const InmuebleForm = () => {
       toast.promise(response, {
         loading: "Cargando...",
         success: (response) => {
-          const formData = new FormData();
-
-          for (let i = 0; i < imagenes.length; i++) {
-            const element = imagenes[i];
-            formData.append("imagenes", element);
-            console.log(element);
-          }
-
-          toast.promise(
-            axios.post(
-              API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            ),
-            {
-              loading: "Subiendo imagenes...",
-              success: (response) => {
-                navigate("/inmuebles");
-                return "Subida completada";
-              },
-              error: "Error al subir imagenes",
+          if (imagenes[0] || imagenes[1] || imagenes[2] || imagenes[3]) {
+            const formData = new FormData();
+            for (let i = 0; i < imagenes.length; i++) {
+              const element = imagenes[i];
+              formData.append("imagenes", element);
+              console.log(element);
             }
-          );
+
+            toast.promise(
+              axios.post(
+                API_URL + "inmuebles/subir-imagen/" + response?.data?.id,
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              ),
+              {
+                loading: "Subiendo imagenes...",
+                success: (response) => {
+                  navigate("/inmuebles");
+                  return "Subida completada";
+                },
+                error: "Error al subir imagenes",
+              }
+            );
+          } else {
+            navigate("/inmuebles");
+          }
 
           return "Accion exitosa";
         },
@@ -122,7 +125,11 @@ export const InmuebleForm = () => {
 
   const fetchPropietarios = async () => {
     try {
-      const response = await getData("clientes");
+      let parametros = "";
+      if (filtro?.nombre) {
+        parametros += `&nombre=${filtro.nombre}`;
+      }
+      const response = await getData("clientes?" + parametros);
       setPropietarios(response?.data);
     } catch (error) {
       console.error(error);
@@ -134,7 +141,7 @@ export const InmuebleForm = () => {
       fetchInmueble();
     }
     fetchPropietarios();
-  }, [id]);
+  }, [id, filtro]);
 
   if (loading) return <Loading texto={"Cargando..."} />;
   return (
@@ -155,7 +162,7 @@ export const InmuebleForm = () => {
           <option value="" disabled>
             Seleccione...
           </option>
-          {tipo_inmuebles.map((tipo) => {
+          {TIPO_INMUEBLES.map((tipo) => {
             return <option value={tipo}>{tipo}</option>;
           })}
         </select>
@@ -184,7 +191,7 @@ export const InmuebleForm = () => {
                     displayEmpty
                   >
                     <MenuItem disabled>Seleccione...</MenuItem>
-                    {estados_inmueble.map((estado) => {
+                    {ESTADOS_INMUEBLE.map((estado) => {
                       return <MenuItem value={estado}>{estado}</MenuItem>;
                     })}
                   </Select>
@@ -230,6 +237,7 @@ export const InmuebleForm = () => {
                         className="form-check-input"
                         type="checkbox"
                         name="venta"
+                        checked={inmueble?.venta}
                         value={inmueble?.venta}
                         onChange={(e) => {
                           setInmueble({
@@ -323,81 +331,54 @@ export const InmuebleForm = () => {
                 <p className="border-bottom mb-3 mt-3 fw-bold">Propietario </p>
                 <section className="d-flex justify-content-between flex-wrap gap-3">
                   <div className="col">
-                    {/* <InputText
-                      required
+                    <TextField
                       type="text"
-                      label={"Propietario"}
-                      fullWidth={true}
-                    /> */}
-                  </div>
-                  <div className="col">
-                    <label className="form-label mb-1">
-                      Listado de propietarios
-                    </label>
-                    <select
-                      required
-                      className="form-select"
-                      name="propietario"
-                      id="propietario"
-                      defaultValue={""}
-                      value={inmueble?.propietario?.id}
+                      label={"Buscar propietario"}
+                      variant="filled"
+                      fullWidth
+                      value={filtro?.nombre}
                       onChange={(e) =>
-                        setInmueble({
-                          ...inmueble,
-                          propietario: {
-                            id: e.target.value,
-                          },
-                        })
+                        setFiltro({ ...filtro, nombre: e.target.value })
                       }
-                    >
-                      <option value="" disabled>
-                        Selecciona un propietario
-                      </option>
-                      {propietarios?.map((propietario) => {
-                        return (
-                          <option value={propietario.id}>
-                            {propietario.apellido + " " + propietario.nombre}
-                          </option>
-                        );
-                      })}
-                    </select>
+                    />
+                  </div>
+
+                  <div className="col">
+                    <FormControl fullWidth variant="filled">
+                      <InputLabel>Propietario</InputLabel>
+                      <Select
+                        required
+                        fullWidth
+                        value={inmueble?.propietario?.id}
+                        onChange={(e) =>
+                          setInmueble({
+                            ...inmueble,
+                            propietario: {
+                              id: e.target.value,
+                            },
+                          })
+                        }
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione...
+                        </MenuItem>
+                        {propietarios?.map((propietario) => {
+                          return (
+                            <MenuItem value={propietario?.id}>
+                              {propietario?.nombre +
+                                " " +
+                                propietario?.apellido}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
                   </div>
                 </section>
                 <p className="border-bottom mb-3 mt-3 fw-bold">Imágenes </p>
-                {/* {!inmueble?.id && (
-                  <>
-                    <section>
-                      <div>
-                        <label htmlFor="imagenes">Máximo de 4 imágenes!</label>
-                        <input
-                          onChange={(e) => {
-                            if (e.target.files.length > 4) {
-                              alert(
-                                "Solo puedes subir un máximo de 4 imagenes"
-                              );
-                              e.target.value = "";
-                            } else {
-                              setImagenes(e.target.files);
-                            }
-                          }}
-                          accept="image/*"
-                          className="form-control"
-                          type="file"
-                          multiple
-                          // required
-                          // min={1}
-                          name="imagenes"
-                          id="imagenes"
-                        />
-                      </div>
-                    </section>
-                  </>
-                )} */}
 
                 <div className="gap-3 d-flex flex-column">
                   {imagenes?.map((_, index) => {
-                    console.log("Valor del indice " + imageID[index]);
-
                     return (
                       <div className="d-flex flex-row gap-2 align-items-end">
                         <Imagen imagen={imageID[index]} width={100} />

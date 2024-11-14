@@ -1,9 +1,11 @@
 /* eslint-disable react/jsx-key */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { estados_contrato } from "../../data/data";
+import { ESTADOS_CONTRATO } from "../../data/data";
 import { ContratoTable } from "./ContratoTable";
+import { getData } from "../../service/apiService";
 export const ContratoPage = () => {
+  const [clientes, setClientes] = useState();
   const [filtro, setFiltro] = useState({
     estado: null,
     activo: null,
@@ -11,6 +13,17 @@ export const ContratoPage = () => {
     fechaHasta: null,
   });
 
+  const fetchClientes = async () => {
+    try {
+      const response = await getData("clientes");
+      setClientes(response?.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchClientes();
+  }, []);
   return (
     <main>
       <div className="bloque">
@@ -35,8 +48,29 @@ export const ContratoPage = () => {
               name="estado"
             >
               <option value="">Todos</option>
-              {estados_contrato.map((estado) => {
+              {ESTADOS_CONTRATO.map((estado) => {
                 return <option value={estado}>{estado}</option>;
+              })}
+            </select>
+          </div>
+          <div className="col-auto">
+            <label className="form-label mb-1">Cliente</label>
+            <select
+              onChange={(e) => {
+                setFiltro({
+                  ...filtro,
+                  cliente: e.target.value,
+                });
+              }}
+              className="form-select"
+            >
+              <option value="">Todos</option>
+              {clientes?.map((cliente) => {
+                return (
+                  <option key={cliente?.id} value={cliente?.id}>
+                    {cliente?.nombre + " " + cliente?.apellido}
+                  </option>
+                );
               })}
             </select>
           </div>

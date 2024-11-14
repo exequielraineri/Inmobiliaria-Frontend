@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-key */
 import { useState } from "react";
-import { provincias, tipo_clientes } from "../../data/data";
+import { PROVINCIAS, TIPO_CLIENTES } from "../../data/data";
 import { ClienteForm } from "./ClienteForm";
 import { ClienteTable } from "./ClienteTable";
+import { FormControl } from "@mui/material";
 
 export const ClientePage = () => {
   const [isOpenClienteForm, setIsOpenClienteForm] = useState(false);
@@ -21,6 +22,7 @@ export const ClientePage = () => {
         <h6 className="text-secondary">Criterios de busqueda</h6>
         <div className="d-flex flex-wrap gap-3 col-12">
           <div className="col-auto">
+            <FormControl></FormControl>
             <label className="form-label mb-1" htmlFor="tipo">
               Tipo Cliente
             </label>
@@ -37,7 +39,7 @@ export const ClientePage = () => {
               name="tipo"
             >
               <option value="">Todos</option>
-              {tipo_clientes?.map((tipo) => {
+              {TIPO_CLIENTES?.map((tipo) => {
                 return <option value={tipo}>{tipo}</option>;
               })}
             </select>
@@ -60,7 +62,7 @@ export const ClientePage = () => {
               id="provincia"
             >
               <option value="">Todos</option>
-              {provincias.map((prov) => {
+              {PROVINCIAS.map((prov) => {
                 return <option value={prov}>{prov}</option>;
               })}
             </select>

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { toast } from "sonner";
-import { provincias, tipo_clientes } from "../../data/data";
+import { PROVINCIAS } from "../../data/data";
 import { postData, putData } from "../../service/apiService";
 
 export const ClienteForm = ({
@@ -144,7 +144,7 @@ export const ClienteForm = ({
                 <option selected disabled value="">
                   Seleccione
                 </option>
-                {provincias?.map((prov) => {
+                {PROVINCIAS?.map((prov) => {
                   return (
                     <option key={prov} value={prov}>
                       {prov}

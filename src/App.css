@@ -1,3 +1,24 @@
+:root {
+  --color-contrato-pendiente: #FFC107;
+  --color-contrato-activo: #4CAF50;
+  --color-contrato-finalizado: #9E9E9E;
+  --color-contrato-cancelado: #F44336;
+
+  --color-inmueble-mantenimiento: #FF9800;
+  --color-inmueble-disponible: #8BC34A;
+  --color-inmueble-alquilado: #2196F3;
+  --color-inmueble-vendido: #616161;
+
+  --color-caja-egreso: #D32F2F;
+  --color-caja-ingreso: #388E3C;
+
+  --color-azul-100:#03045E;
+  --color-azul-75:#0077B6;
+  --color-azul-50:#00B4D8;
+  --color-azul-25:#90E0EF;
+  --color-azul-0:#CAF0F8;
+
+}
 
 
 .bloque{
@@ -7,11 +28,24 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, .2);
 }
 
-table thead {
-  font-size: .8em;
-  background-color: #000 !important;
+
+
+
+table {
+  width: 100%;
+  vertical-align: middle !important;
+  border-collapse: collapse;
 }
-table thead th{
-  background-color: #000 !important;
+
+th {
+  font-size: .8em !important;
+  /* background-color: #000 !important; */
+  background-color: var(--color-azul-100) !important;
   color: #fff !important;
+  padding: 5px !important;
 }
+td {
+  padding: 5px !important;
+  text-align: left !important;
+}
+

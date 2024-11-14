@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getData } from "../../service/apiService";
 import { formatearPrecio } from "../../data/funciones";
+import { Container } from "@mui/material";
 
 export const ContratoTab = () => {
   const [contratos, setContratos] = useState([]);
@@ -94,6 +95,7 @@ export const ContratoTab = () => {
         <div className="col-auto">
           <label className="form-label mb-1">Tipo</label>
           <select
+            value={filtro?.tipoContrato}
             onChange={(e) => {
               setFiltro({
                 ...filtro,
@@ -142,6 +144,7 @@ export const ContratoTab = () => {
               <th className="col-auto">#</th>
               <th className="col">Contrato</th>
               <th className="col">Cliente</th>
+              <th className="col">Tipo de Contrato</th>
               <th className="col">Estado</th>
               <th className="col-auto">Importe Total</th>
             </tr>
@@ -157,7 +160,18 @@ export const ContratoTab = () => {
                       " " +
                       contrato?.cliente?.apellido}
                   </td>
-                  <td>{contrato?.estado}</td>
+                  <td>{contrato?.tipoContrato}</td>
+                  <td>
+                    <span
+                      className={
+                        contrato?.estado == "PENDIENTE"
+                          ? "text-bg-warning px-2 rounded"
+                          : "text-bg-success px-2 rounded"
+                      }
+                    >
+                      {contrato?.estado}
+                    </span>
+                  </td>
                   <td>{formatearPrecio(contrato?.importe)}</td>
                 </tr>
               );

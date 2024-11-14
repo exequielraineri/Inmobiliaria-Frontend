@@ -27,6 +27,9 @@ export const ContratoTable = ({ filtro, setFiltro }) => {
       if (filtro?.activo) {
         parametros += `&activo=${filtro.activo}`;
       }
+      if (filtro?.cliente) {
+        parametros += `&cliente=${filtro.cliente}`;
+      }
 
       const response = await getData("contratos?" + parametros);
       setContratos(response?.data);
@@ -70,6 +73,7 @@ export const ContratoTable = ({ filtro, setFiltro }) => {
               <tr>
                 <th className="col-auto">#</th>
                 <th className="col">Fecha Contrato</th>
+                <th className="col">Cliente</th>
                 <th className="col">Agente</th>
                 <th className="col">Tipo Contrato</th>
                 <th className="col">Monto</th>
@@ -87,6 +91,11 @@ export const ContratoTable = ({ filtro, setFiltro }) => {
                     <td>
                       {new Date(contrato?.fechaContrato).toLocaleDateString()}
                     </td>
+                    <td>
+                      {(contrato?.cliente?.nombre || "-") +
+                        " " +
+                        (contrato?.cliente?.apellido || "-")}
+                    </td>
                     <td>{contrato?.agente?.nombre || "-"}</td>
                     <td>{contrato?.tipoContrato || "-"}</td>
                     <td>{formatearPrecio(contrato?.importe)}</td>
@@ -98,7 +107,21 @@ export const ContratoTable = ({ filtro, setFiltro }) => {
                       {contrato?.fechaFin &&
                         new Date(contrato?.fechaFin).toLocaleDateString()}
                     </td>
-                    <td>{contrato?.estado || "-"}</td>
+                    <td>
+                      <span
+                        className={"px-2 rounded ".concat(
+                          contrato?.estado == "PENDIENTE"
+                            ? "text-bg-warning"
+                            : contrato?.estado == "ACTIVO"
+                            ? "text-bg-success"
+                            : contrato?.estado == "FINALIZADO"
+                            ? "text-bg-primary"
+                            : "text-bg-danger"
+                        )}
+                      >
+                        {contrato?.estado || "-"}
+                      </span>
+                    </td>
                     <td>
                       <div className="d-flex gap-1">
                         <Link to={"/contratos/" + contrato?.id}>

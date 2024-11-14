@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { UsuarioContexto } from "../Context/UsuarioContext";
 import { RoutesComponent } from "../Routes/RoutesComponent";
@@ -117,7 +117,7 @@ export const LayoutPrincipal = () => {
             onClick={() => {
               sessionStorage.removeItem("usuario");
             }}
-            className="sidebar-link link-danger"
+            className="sidebar-link link-danger text-white"
           >
             <i className="fa-solid fa-right-from-bracket"></i>
             <span>Cerrar Sesión</span>
@@ -125,7 +125,7 @@ export const LayoutPrincipal = () => {
         </div>
       </aside>
       <div className="main bg-light">
-        <nav className="border-bottom navbar navbar-expand px-4 py-3">
+        <nav className="border-bottom navbar navbar-expand px-4 py-3 bg-white">
           <div className=" w-100 d-flex justify-content-between align-items-center">
             <h3 className="fw-light">
               Bienvenido <span className="fw-bold"> {usuario?.nombre}</span>

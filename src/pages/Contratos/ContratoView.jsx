@@ -8,6 +8,7 @@ import { formatearPrecio } from "../../data/funciones";
 import { toast } from "sonner";
 import { useCol } from "react-bootstrap/esm/Col";
 import { UsuarioContexto } from "../../Context/UsuarioContext";
+import { LinkPago } from "../../components/LinkPago/LinkPago";
 export const ContratoView = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -118,10 +119,12 @@ export const ContratoView = () => {
           <thead className="table-dark">
             <tr>
               <th className="col-auto">#</th>
+              <th className="col-auto">N° Pago</th>
               <th className="col">Fecha de Pago</th>
               <th className="col">Fecha de Registro</th>
               <th className="col">Monto</th>
               <th className="col">Estado</th>
+              <th className="col">Comprobante</th>
               <th className="col"></th>
               <th className="col-auto"></th>
             </tr>
@@ -139,6 +142,7 @@ export const ContratoView = () => {
                   }
                 >
                   <td>{++index}</td>
+                  <td>{pago?.id}</td>
                   <td>
                     {new Date(pago.fechaPago).toLocaleString(undefined, {
                       dateStyle: "short",
@@ -153,6 +157,9 @@ export const ContratoView = () => {
                   </td>
                   <td>{formatearPrecio(pago.monto)}</td>
                   <td>{pago.estado}</td>
+                  <td>
+                    {pago?.estado == "PAGADO" && <LinkPago id={pago?.id} />}
+                  </td>
                   <td>
                     {pagoAnterior == null && pago.estado == "PENDIENTE" ? (
                       <div>
@@ -187,6 +194,7 @@ export const ContratoView = () => {
                       <span>{pago?.metodoPago}</span>
                     )}
                   </td>
+
                   <td>
                     {metodoPago && (
                       <div className="d-flex gap-2">

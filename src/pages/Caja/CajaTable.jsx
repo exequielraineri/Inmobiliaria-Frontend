@@ -102,14 +102,16 @@ export const CajaTable = ({
                       " " +
                       transaccion?.agente?.apellido}{" "}
                   </td>
-                  <td
-                    className={
-                      transaccion?.tipoTransaccion == "INGRESO"
-                        ? "text-success fw-bold"
-                        : "text-danger fw-bold"
-                    }
-                  >
-                    {transaccion?.tipoTransaccion || "-"}
+                  <td>
+                    <span
+                      className={
+                        transaccion?.tipoTransaccion == "INGRESO"
+                          ? "text-bg-success px-2 rounded"
+                          : "text-bg-danger px-2 rounded"
+                      }
+                    >
+                      {transaccion?.tipoTransaccion || "-"}
+                    </span>
                   </td>
                   <td>{transaccion?.tipoOperacion || "-"}</td>
                   <td>

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { InmuebleTable } from "./InmuebleTable";
-import { tipo_inmuebles } from "../../data/data";
+import { ESTADOS_INMUEBLE, TIPO_INMUEBLES } from "../../data/data";
 
 export const InmueblePage = () => {
   const [filtro, setFiltro] = useState({
@@ -34,7 +34,7 @@ export const InmueblePage = () => {
               }}
             >
               <option value="">Todos</option>
-              {tipo_inmuebles.map((inmueble) => {
+              {TIPO_INMUEBLES.map((inmueble) => {
                 return <option value={inmueble}>{inmueble}</option>;
               })}
             </select>
@@ -75,10 +75,9 @@ export const InmueblePage = () => {
               name="estado"
             >
               <option value="">Todos</option>
-              <option value="DISPONIBLE">DISPONIBLE</option>
-              <option value="MANTENIMIENTO">MANTENIMIENTO</option>
-              <option value="ALQUILADO">ALQUILADO</option>
-              <option value="VENDIDO">VENDIDO</option>
+              {ESTADOS_INMUEBLE?.map((estado) => {
+                return <option value={estado}>{estado}</option>;
+              })}
             </select>
           </div>
         </div>
