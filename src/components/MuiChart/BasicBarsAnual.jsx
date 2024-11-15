@@ -91,46 +91,31 @@ export default function BasicBarsAnual() {
   ];
 
   return (
-    <div>
-      <h5>Pagos Confimados</h5>
+    <div className="w-100">
+      <h5>Pagos Confirmados</h5>
       <hr />
-      {/* <BarChart
-        xAxis={[
-          {
-            scaleType: "band",
-            data: dataMeses,
-            label: "Meses",
-          },
-        ]}
-        series={[
-          {
-            label: "Monto",
-            data: dataMontos,
-            valueFormatter: (e) => formatearPrecio(e.toFixed(2)),
-          },
-        ]}
-        width={1000}
-        height={400}
-        barLabel={(item) => {
-          return formatearPrecio(item?.value);
-        }}
-      /> */}
       <LineChart
         xAxis={[
           {
             data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             label: "Meses",
-            valueFormatter: (e) => dataMeses[e - 1],
+            valueFormatter: (index) => dataMeses[index - 1],
+            scaleType: "band",
           },
         ]}
         series={[
           {
             label: "Montos",
             data: dataMontos,
+            color: "green",
             valueFormatter: (e) => formatearPrecio(e),
           },
         ]}
-        width={800}
+        // width={800}
+        sx={{
+          width: "100%",
+          minWidth: "300px",
+        }}
         height={300}
       />
     </div>

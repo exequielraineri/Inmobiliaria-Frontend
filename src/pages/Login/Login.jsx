@@ -42,54 +42,62 @@ export const Login = () => {
   };
 
   return (
-    <div
-      className="d-flex flex-column align-items-center justify-content-center"
-      style={{
-        minHeight: "100vh",
-      }}
-    >
+    <>
       <div
-        className="w-100 p-4 rounded shadow"
+        className=" d-flex flex-column align-items-center justify-content-center"
         style={{
-          maxWidth: "400px",
+          minHeight: "100vh",
+          backgroundImage: "url(fondo.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <h3 className="border-bottom">Inicio de Sesión</h3>
-        <form onSubmit={onSubmitLogin} className="d-flex flex-column gap-2">
-          <TextField
-            variant="standard"
-            label="Correo"
-            fullWidth
-            type="email"
-            name="email"
-            value={dataForm?.correo}
-            onChange={(e) => {
-              setDataForm({
-                ...dataForm,
-                correo: e.target.value,
-              });
-            }}
-          />
-          <TextField
-            variant="standard"
-            label="Contraseña"
-            fullWidth
-            type="password"
-            name="password"
-            value={dataForm?.password}
-            onChange={(e) => {
-              setDataForm({
-                ...dataForm,
-                password: e.target.value,
-              });
-            }}
-          />
-          <Button type="submit" variant="contained">
-            Iniciar
-          </Button>
-          {/* <div>
+        <h1 className="fw-bold text-white">Real State NOA</h1>
+        <div
+          className="w-100 p-4 rounded shadow"
+          style={{
+            maxWidth: "400px",
+            backgroundColor: "white",
+            opacity: 0.9,
+          }}
+        >
+          <h3 className="border-bottom">Inicio de Sesión</h3>
+          <form onSubmit={onSubmitLogin} className="d-flex flex-column gap-2">
+            <TextField
+              variant="standard"
+              label="Correo"
+              fullWidth
+              type="email"
+              name="email"
+              value={dataForm?.correo}
+              onChange={(e) => {
+                setDataForm({
+                  ...dataForm,
+                  correo: e.target.value,
+                });
+              }}
+            />
+            <TextField
+              variant="standard"
+              label="Contraseña"
+              fullWidth
+              type="password"
+              name="password"
+              value={dataForm?.password}
+              onChange={(e) => {
+                setDataForm({
+                  ...dataForm,
+                  password: e.target.value,
+                });
+              }}
+            />
+            <Button type="submit" variant="contained">
+              Iniciar
+            </Button>
+            {/* <div>
             <label className="form-label mb-1" htmlFor="correo">
-              Correo
+            Correo
             </label>
             <input
               value={dataForm?.correo}
@@ -123,13 +131,14 @@ export const Login = () => {
               id="password"
             />
           </div> */}
-          <div className="d-flex justify-content-end mt-3 d-none">
-            <button className="btn btn-primary">Iniciar Sesión</button>
-          </div>
-        </form>
-        <hr />
-        {error && <p className="text-danger">Credenciales Incorrectas</p>}
+            <div className="d-flex justify-content-end mt-3 d-none">
+              <button className="btn btn-primary">Iniciar Sesión</button>
+            </div>
+          </form>
+          <hr />
+          {error && <p className="text-danger">Credenciales Incorrectas</p>}
+        </div>
       </div>
-    </div>
+    </>
   );
 };

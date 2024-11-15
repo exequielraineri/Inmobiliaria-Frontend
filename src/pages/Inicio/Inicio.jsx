@@ -78,10 +78,10 @@ export const Inicio = () => {
       </section>
       <hr />
       <div className="d-flex flex-wrap justify-content-between gap-3">
-        <div className="bloque p-3 col d-flex justify-content-center align-items-center">
+        <div className="bloque p-3 col-12 col-md d-flex justify-content-center align-items-center">
           <BasicBars inmuebles={estadisticas?.inmuebles} />
         </div>
-        <div className="bloque p-3 col d-flex justify-content-center align-items-center">
+        <div className="bloque p-3 col-12 col-md d-flex justify-content-center align-items-center">
           <BasicPie contratos={estadisticas?.contratos} />
         </div>
         <div className="bloque p-3 col-12 d-flex justify-content-center align-items-center">
@@ -94,7 +94,7 @@ export const Inicio = () => {
 
 export const Panel = ({ titulo, valor, monto }) => {
   return (
-    <div className="col-3 shadow-sm p-3 rounded-3 border-start border-primary text-primary border-3 bg-white">
+    <div className="col-12 col-md-4 shadow-sm p-3 rounded-3 border-start border-primary text-primary border-3 bg-white">
       <span className={monto < 0 ? "fw-bold fs-3 text-danger" : "fw-bold fs-3"}>
         {valor}
       </span>

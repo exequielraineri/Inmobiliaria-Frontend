@@ -65,19 +65,21 @@ export const ContratoForm = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    console.log(contrato);
     const newContrato = {
       ...contrato,
-      fechaInicio: new Date(contrato?.fechaInicio).toISOString(undefined, {
-        timeZone: "UTC",
-      }),
-      fechaFin: new Date(contrato?.fechaFin).toISOString(undefined, {
-        timeZone: "UTC",
-      }),
+      fechaInicio:
+        contrato?.tipoContrato == "VENTA"
+          ? null
+          : new Date(contrato?.fechaInicio).toISOString(),
+      fechaFin:
+        contrato?.tipoContrato == "VENTA"
+          ? null
+          : new Date(contrato?.fechaFin).toISOString(),
       agente: {
         id: usuario?.id,
       },
     };
-    console.log(newContrato);
 
     try {
       toast.promise(postData("/contratos", newContrato), {

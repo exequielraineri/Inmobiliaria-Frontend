@@ -25,7 +25,7 @@ export default function BasicBars({ inmuebles }) {
     }
   }, [inmuebles]);
   return (
-    <div>
+    <div className="w-100">
       <h5>Inmuebles por tipo</h5>
       <hr />
       <BarChart
@@ -47,7 +47,11 @@ export default function BasicBars({ inmuebles }) {
             ],
           },
         ]}
-        width={500}
+        // width={500}
+        sx={{
+          width: "100%",
+          minWidth: "300px",
+        }}
         height={300}
         barLabel={"value"}
       />

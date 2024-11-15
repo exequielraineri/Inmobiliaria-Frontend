@@ -61,7 +61,7 @@ export default function BasicPie() {
   }, []);
 
   return (
-    <div>
+    <div className="w-100">
       <h5>Tipo de Operación</h5>
       <hr />
       <PieChart
@@ -82,7 +82,11 @@ export default function BasicPie() {
             ],
           },
         ]}
-        width={500}
+        // width={500}
+        sx={{
+          width: "100%",
+          minWidth: "300px",
+        }}
         height={300}
       />
     </div>
