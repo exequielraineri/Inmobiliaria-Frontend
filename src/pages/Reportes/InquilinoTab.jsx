@@ -14,10 +14,10 @@ export const InquilinoTab = () => {
         parametros += `&estado=${filtro.estado}`;
       }
       if (filtro?.fechaDesde) {
-        parametros += `&fechaDesde=${filtro.fechaDesde.replaceAll("-", "/")}`;
+        parametros += `&fechaDesde=${filtro.fechaDesde}`;
       }
       if (filtro?.fechaHasta) {
-        parametros += `&fechaHasta=${filtro.fechaHasta.replaceAll("-", "/")}`;
+        parametros += `&fechaHasta=${filtro.fechaHasta}`;
       }
       const response = await getData("pagos?" + parametros);
       setPagos(response?.data);
@@ -54,11 +54,12 @@ export const InquilinoTab = () => {
         <div className="col-auto">
           <label className="form-label mb-1">Feche Desde</label>
           <input
-            value={filtro?.fechaDesde}
+            value={filtro?.fechaDesde ? filtro?.fechaDesde?.split("T")[0] : ""}
             onChange={(e) => {
+              const fecha = e.target.value;
               setFiltro({
                 ...filtro,
-                fechaDesde: e.target.value,
+                fechaDesde: fecha + "T00:00:00",
               });
             }}
             type="date"
@@ -68,11 +69,12 @@ export const InquilinoTab = () => {
         <div className="col-auto">
           <label className="form-label mb-1">Feche Hasta</label>
           <input
-            value={filtro?.fechaHasta}
+            value={filtro?.fechaHasta ? filtro?.fechaHasta?.split("T")[0] : ""}
             onChange={(e) => {
+              const fecha = e.target.value;
               setFiltro({
                 ...filtro,
-                fechaHasta: e.target.value,
+                fechaHasta: fecha + "T23:59:59",
               });
             }}
             type="date"

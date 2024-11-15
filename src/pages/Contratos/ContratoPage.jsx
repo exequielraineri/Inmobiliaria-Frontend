@@ -100,11 +100,14 @@ export const ContratoPage = () => {
               Desde
             </label>
             <input
-              value={filtro?.fechaDesde}
+              value={
+                filtro?.fechaDesde ? filtro?.fechaDesde?.split("T")[0] : ""
+              }
               onChange={(e) => {
+                const fecha = e.target.value;
                 setFiltro({
                   ...filtro,
-                  fechaDesde: e.target.value,
+                  fechaDesde: fecha + "T00:00:00",
                 });
               }}
               type="date"
@@ -116,11 +119,14 @@ export const ContratoPage = () => {
               Hasta
             </label>
             <input
-              value={filtro?.fechaHasta}
+              value={
+                filtro?.fechaHasta ? filtro?.fechaHasta?.split("T")[0] : ""
+              }
               onChange={(e) => {
+                const fecha = e.target.value;
                 setFiltro({
                   ...filtro,
-                  fechaHasta: e.target.value,
+                  fechaHasta: fecha + "T23:59:59",
                 });
               }}
               type="date"

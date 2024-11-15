@@ -23,10 +23,10 @@ export const CajaTable = ({
         parametros += `&tipoOperacion=${filtro?.tipoOperacion}`;
       }
       if (filtro?.fechaDesde) {
-        parametros += `&fechaDesde=${filtro?.fechaDesde.replaceAll("-", "/")}`;
+        parametros += `&fechaDesde=${filtro?.fechaDesde}`;
       }
       if (filtro?.fechaHasta) {
-        parametros += `&fechaHasta=${filtro?.fechaHasta.replaceAll("-", "/")}`;
+        parametros += `&fechaHasta=${filtro?.fechaHasta}`;
       }
 
       const response = await getData("transacciones?" + parametros);

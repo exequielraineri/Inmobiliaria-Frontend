@@ -1,7 +1,5 @@
 /* eslint-disable react/prop-types */
 import { Tab, Tabs } from "react-bootstrap";
-import { ContratoTab } from "./ContratoTab";
-import { GastosTab } from "./GastosTab";
 import { InquilinoTab } from "./InquilinoTab";
 
 export const ReportePage = () => {

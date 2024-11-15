@@ -19,10 +19,10 @@ export const ContratoTable = ({ filtro, setFiltro }) => {
         parametros += `&estado=${filtro.estado}`;
       }
       if (filtro?.fechaDesde) {
-        parametros += `&fechaDesde=${filtro.fechaDesde.replaceAll("-", "/")}`;
+        parametros += `&fechaDesde=${filtro.fechaDesde}`;
       }
       if (filtro?.fechaHasta) {
-        parametros += `&fechaHasta=${filtro.fechaHasta.replaceAll("-", "/")}`;
+        parametros += `&fechaHasta=${filtro.fechaHasta}`;
       }
       if (filtro?.activo) {
         parametros += `&activo=${filtro.activo}`;
