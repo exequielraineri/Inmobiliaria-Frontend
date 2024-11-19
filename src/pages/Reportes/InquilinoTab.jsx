@@ -5,6 +5,7 @@ import { LinkPago } from "../../components/LinkPago/LinkPago";
 
 export const InquilinoTab = () => {
   const [pagos, setPagos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [pagosFiltrados, setPagosFiltrados] = useState([]);
   const [filtro, setFiltro] = useState();
   const fetchInquilinos = async () => {
@@ -19,6 +20,7 @@ export const InquilinoTab = () => {
       if (filtro?.fechaHasta) {
         parametros += `&fechaHasta=${filtro.fechaHasta}`;
       }
+
       const response = await getData("pagos?" + parametros);
       setPagos(response?.data);
     } catch (error) {

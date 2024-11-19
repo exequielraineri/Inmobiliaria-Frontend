@@ -1,16 +1,19 @@
 /* eslint-disable react/jsx-key */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AgenteForm } from "./AgenteForm";
 import { AgenteTable } from "./AgenteTable";
+import { getData } from "../../service/apiService";
 
 export const AgentePage = () => {
   const [isOpenAgenteForm, setIsOpenAgenteForm] = useState(false);
   const [actualizadoTabla, setActualizarTabla] = useState(false);
+  const [usuarios, setUsuarios] = useState();
   const [usuarioSelect, setUsuarioSelect] = useState();
   const [filtro, setFiltro] = useState({
     provincia: null,
     activo: null,
   });
+
   return (
     <main>
       <div className="bloque">
@@ -58,6 +61,52 @@ export const AgentePage = () => {
               <option value="true">Activo</option>
               <option value="false">Inactivo</option>
             </select>
+          </div>
+          <div className="col-auto">
+            <label
+              defaultValue={""}
+              className="form-label mb-1"
+              htmlFor="estado"
+            >
+              Fecha Desde
+            </label>
+            <input
+              className="form-control"
+              type="date"
+              value={
+                filtro?.fechaDesde ? filtro?.fechaDesde?.split("T")[0] : ""
+              }
+              onChange={(e) => {
+                const fecha = e.target.value;
+                setFiltro({
+                  ...filtro,
+                  fechaDesde: fecha + "T00:00:00",
+                });
+              }}
+            />
+          </div>
+          <div className="col-auto">
+            <label
+              defaultValue={""}
+              className="form-label mb-1"
+              htmlFor="estado"
+            >
+              Fecha Hasta
+            </label>
+            <input
+              className="form-control"
+              type="date"
+              value={
+                filtro?.fechaHasta ? filtro?.fechaHasta?.split("T")[0] : ""
+              }
+              onChange={(e) => {
+                const fecha = e.target.value;
+                setFiltro({
+                  ...filtro,
+                  fechaHasta: fecha + "T23:59:59",
+                });
+              }}
+            />
           </div>
         </div>
 

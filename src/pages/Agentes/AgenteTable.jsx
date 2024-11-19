@@ -8,14 +8,12 @@ import { deleteData, getData } from "../../service/apiService";
 export const AgenteTable = ({
   actualizarTabla,
   setActualizarTabla,
-  usuarioSelect,
   setUsuarioSelect,
-  isOpenAgenteForm,
   setIsOpenAgenteForm,
   filtro,
-  setFiltro,
 }) => {
   const [usuarios, setUsuarios] = useState([]);
+  const [pagos, setPagos] = useState([]);
   const [loading, setLoading] = useState(false);
   const { usuario } = useContext(UsuarioContexto);
   const fetchUsuarios = async () => {
@@ -25,17 +23,32 @@ export const AgenteTable = ({
       if (filtro?.activo) {
         parametros += `&activo=${filtro?.activo}`;
       }
+
       if (filtro?.provincia) {
         parametros += `&provincia=${filtro?.provincia}`;
       }
-      if (filtro?.fechaDesde) {
-        parametros += `&fechaDesde=${filtro?.fechaDesde.replaceAll("-", "/")}`;
-      }
-      if (filtro?.fechaHasta) {
-        parametros += `&fechaHasta=${filtro?.fechaHasta.replaceAll("-", "/")}`;
-      }
+
       const response = await getData("usuarios?" + parametros);
       setUsuarios(response?.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fecthPagos = async () => {
+    setLoading(true);
+    try {
+      let parametrosPagos = "&isFechaRegistro=true";
+      if (filtro?.fechaDesde) {
+        parametrosPagos += `&fechaDesde=${filtro?.fechaDesde}`;
+      }
+      if (filtro?.fechaHasta) {
+        parametrosPagos += `&fechaHasta=${filtro?.fechaHasta}`;
+      }
+      const responsePagos = await getData("pagos?" + parametrosPagos);
+      setPagos(responsePagos?.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -62,6 +75,7 @@ export const AgenteTable = ({
 
   useEffect(() => {
     fetchUsuarios();
+    fecthPagos();
   }, [actualizarTabla, filtro]);
 
   if (loading) return <div>Cargando...</div>;
@@ -79,7 +93,8 @@ export const AgenteTable = ({
                 <th className="col">Agente</th>
                 <th className="col">Comision Venta</th>
                 <th className="col">Comision Alquiler</th>
-                <th className="col">Ganancias</th>
+                <th className="col">Ganancia</th>
+                <th className="col">Ganancias Total</th>
                 <th className="col">Email</th>
                 <th className="col">Provincia</th>
                 <th className="col">Rol</th>
@@ -88,51 +103,60 @@ export const AgenteTable = ({
               </tr>
             </thead>
             <tbody>
-              {usuarios?.map((user, index) => {
-                return (
-                  <tr key={user.id}>
-                    <td>{++index}</td>
-                    <td>
-                      {(user?.nombre || "-") + " " + (user?.apellido || "-")}
-                    </td>
-                    <td>{user?.comisionVenta || "-"}</td>
-                    <td>{user?.comisionAlquiler || "-"}</td>
-                    <td>{formatearPrecio(user?.totalGanancias)}</td>
-                    <td>{user?.correo || "-"}</td>
-                    <td>{user?.provincia || "-"}</td>
-                    <td>{user?.rol || "-"}</td>
-                    <td>
-                      {new Date(user?.fechaRegistro).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <div className="d-flex gap-1">
-                        <button hidden className="btn btn-primary btn-sm">
-                          <i className="fa-solid fa-search"></i>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setUsuarioSelect(user);
-                            setIsOpenAgenteForm(true);
-                          }}
-                          className="btn btn-outline-warning btn-sm"
-                        >
-                          <i className="fa-solid fa-edit"></i>
-                        </button>
-                        {usuario?.id != user?.id && (
+              {usuarios &&
+                pagos &&
+                usuarios?.map((user, index) => {
+                  let ganancia = 0;
+                  pagos?.map((pago) => {
+                    if (pago?.contrato?.agente?.id == user?.id) {
+                      ganancia += pago?.gananciaAgente;
+                    }
+                  });
+                  return (
+                    <tr key={user.id}>
+                      <td>{++index}</td>
+                      <td>
+                        {(user?.nombre || "-") + " " + (user?.apellido || "-")}
+                      </td>
+                      <td>{user?.comisionVenta || "-"}</td>
+                      <td>{user?.comisionAlquiler || "-"}</td>
+                      <td>{formatearPrecio(ganancia || 0)}</td>
+                      <td>{formatearPrecio(user?.totalGanancias)}</td>
+                      <td>{user?.correo || "-"}</td>
+                      <td>{user?.provincia || "-"}</td>
+                      <td>{user?.rol || "-"}</td>
+                      <td>
+                        {new Date(user?.fechaRegistro).toLocaleDateString()}
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          <button hidden className="btn btn-primary btn-sm">
+                            <i className="fa-solid fa-search"></i>
+                          </button>
                           <button
                             onClick={() => {
-                              eliminarUsuario(user?.id);
+                              setUsuarioSelect(user);
+                              setIsOpenAgenteForm(true);
                             }}
-                            className="btn btn-outline-danger  btn-sm"
+                            className="btn btn-outline-warning btn-sm"
                           >
-                            <i className="fa-solid fa-trash "></i>
+                            <i className="fa-solid fa-edit"></i>
                           </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                          {usuario?.id != user?.id && (
+                            <button
+                              onClick={() => {
+                                eliminarUsuario(user?.id);
+                              }}
+                              className="btn btn-outline-danger  btn-sm"
+                            >
+                              <i className="fa-solid fa-trash "></i>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
