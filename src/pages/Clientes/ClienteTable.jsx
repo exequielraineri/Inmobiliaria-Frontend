@@ -73,6 +73,7 @@ export const ClienteTable = ({
                 <th className="col-auto">#</th>
                 <th className="col">Nombre</th>
                 <th className="col">Apellido</th>
+                <th className="col">Dni</th>
                 <th className="col">Telefono</th>
                 <th className="col">Provincia</th>
                 <th className="col">Fecha Registro</th>
@@ -91,6 +92,7 @@ export const ClienteTable = ({
                     <td>{++index}</td>
                     <td>{cliente?.nombre || "-"}</td>
                     <td>{cliente?.apellido || "-"}</td>
+                    <td>{cliente?.dni || "-"}</td>
                     <td>{cliente?.telefono || "-"}</td>
                     <td>{cliente?.provincia || "-"}</td>
                     <td>

@@ -85,12 +85,12 @@ export const InquilinoTab = () => {
         </div>
       </div>
       <div className="table-responsive " style={{ maxHeight: "80vh" }}>
-        <h5>Inquilinos</h5>
+        <h5>Pagos</h5>
         <table className="table table-sm table-hover table-striped">
           <thead>
             <tr>
               <th>#</th>
-              <th>Inquilino</th>
+              <th>Cliente</th>
               <th>Inmueble</th>
               <th>Monto</th>
               <th>Fecha Registro</th>

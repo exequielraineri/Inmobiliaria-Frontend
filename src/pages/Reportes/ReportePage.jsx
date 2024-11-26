@@ -5,7 +5,7 @@ import { InquilinoTab } from "./InquilinoTab";
 export const ReportePage = () => {
   return (
     <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-      <Tab eventKey={1} title="Inquilinos">
+      <Tab eventKey={1} title="Pagos">
         <InquilinoTab />
       </Tab>
     </Tabs>

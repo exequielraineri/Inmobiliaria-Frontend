@@ -22,29 +22,6 @@ export const ClientePage = () => {
         <h6 className="text-secondary">Criterios de busqueda</h6>
         <div className="d-flex flex-wrap gap-3 col-12">
           <div className="col-auto">
-            <FormControl></FormControl>
-            <label className="form-label mb-1" htmlFor="tipo">
-              Tipo Cliente
-            </label>
-            <select
-              value={filtro?.tipoCliente}
-              onChange={(e) => {
-                setFiltro({
-                  ...filtro,
-                  tipoCliente: e.target.value,
-                });
-              }}
-              defaultValue={""}
-              className="form-select"
-              name="tipo"
-            >
-              <option value="">Todos</option>
-              {TIPO_CLIENTES?.map((tipo) => {
-                return <option value={tipo}>{tipo}</option>;
-              })}
-            </select>
-          </div>
-          <div className="col-auto">
             <label className="form-label mb-1" htmlFor="ubicacion">
               Provincia
             </label>

@@ -102,7 +102,7 @@ export const ClienteForm = ({
             </div>
             <div className="col-12 col-md-5">
               <label className="form-label mb-1" htmlFor="dni">
-                Dni
+                DNI
               </label>
               <input
                 value={cliente?.dni}
